@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZingPlay — Portfolio Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:       #FF6B00;
+  --orange-deep:  #E05A00;
+  --orange-light: #FFF0E6;
+  --orange-mid:   #FFD9B8;
+  --orange-soft:  #FFEBDA;
+  --white:        #FFFFFF;
+  --bg:           #F7F4F1;
+  --surface:      #FFFFFF;
+  --card:         #FFFFFF;
+  --card2:        #FAF8F6;
+  --border:       #EDEBE8;
+  --border2:      #E0DDD9;
+  --text:         #1A1714;
+  --text2:        #6B6560;
+  --text3:        #A8A29D;
+  --green:        #0D9065;
+  --green-lt:     #E6F7F1;
+  --red:          #D93025;
+  --red-lt:       #FDECEA;
+  --blue:         #1A5FD4;
+  --blue-lt:      #EAF1FC;
+  --amber:        #B45309;
+  --amber-lt:     #FEF3C7;
+  --mono:         'DM Mono', monospace;
+  --sans:         'Plus Jakarta Sans', sans-serif;
+  --r:            12px;
+  --r-sm:         8px;
+  --shadow:       0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════
+   UPLOAD SCREEN
+═══════════════════════════════ */
+#uploadScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--white);
+}
+
+.up-inner { width: 100%; max-width: 820px; }
+
+.up-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1.5px solid var(--border);
+}
+
+.up-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.up-logo-box {
+  width: 38px; height: 38px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.up-logo-box svg { width: 20px; height: 20px; }
+
+.up-brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.3px;
+}
+
+.up-brand-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-top: 1px;
+}
+
+.up-sep { flex: 1; }
+
+.up-period-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--card2);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.up-hero {
+  margin-bottom: 36px;
+}
+
+.up-h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.6px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.up-h1 span { color: var(--orange); }
+
+.up-h2 {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+/* Category tabs on upload */
+.up-cats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media(max-width:600px){ .up-cats { grid-template-columns: 1fr; } }
+
+.up-cat-panel {
+  background: var(--card2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  transition: border-color .2s;
+}
+
+.up-cat-panel:hover { border-color: var(--orange-mid); }
+
+.up-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.up-cat-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+.up-cat-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.up-cat-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+.up-zones-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.up-zone {
+  background: var(--white);
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  position: relative;
+  transition: all .18s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.up-zone:hover, .up-zone.dragover {
+  border-color: var(--orange);
+  background: var(--orange-light);
+}
+
+.up-zone.loaded {
+  border-style: solid;
+  border-color: var(--green);
+  background: var(--green-lt);
+}
+
+.up-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+}
+
+.up-zone-icon { font-size: 16px; flex-shrink: 0; }
+
+.up-zone-info { flex: 1; min-width: 0; }
+
+.up-zone-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.up-zone-hint { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+.up-zone-ok {
+  font-size: 10px;
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.up-add-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.up-add-input {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 7px 10px;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+
+.up-add-input:focus { border-color: var(--orange); }
+.up-add-input::placeholder { color: var(--text3); }
+
+.up-add-btn {
+  padding: 7px 12px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+
+.up-add-btn:hover { background: var(--orange-deep); }
+
+.up-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.up-hint {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.up-hint a {
+  color: var(--orange);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn-launch {
+  padding: 11px 32px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .1px;
+  box-shadow: 0 2px 8px rgba(255,107,0,.25);
+}
+
+.btn-launch:hover { background: var(--orange-deep); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,107,0,.3); }
+.btn-launch:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ═══════════════════════════════
+   APP SHELL
+═══════════════════════════════ */
+#app { display: none; }
+
+.topbar {
+  height: 54px;
+  background: var(--white);
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow);
+}
+
+.tb-left { display: flex; align-items: center; gap: 14px; }
+
+.tb-logo {
+  width: 28px; height: 28px;
+  background: var(--orange);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.tb-logo svg { width: 14px; height: 14px; }
+
+.tb-brand {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.2px;
+}
+
+.tb-brand span { color: var(--orange); }
+
+.tb-sep {
+  width: 1px; height: 16px;
+  background: var(--border2);
+}
+
+.tb-period {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.tb-right { display: flex; align-items: center; gap: 8px; }
+
+.tb-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+
+.btn-reset {
+  padding: 6px 14px;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  transition: all .15s;
+}
+
+.btn-reset:hover { background: var(--card2); color: var(--text); }
+
+/* ═══════════════════════════════
+   TIMEFRAME BAR
+═══════════════════════════════ */
+.tf-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.tf-bar::-webkit-scrollbar { display: none; }
+
+.tf-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tf-presets {
+  display: flex;
+  gap: 2px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.tf-btn {
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-family: var(--sans);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tf-btn:hover { color: var(--text2); background: rgba(0,0,0,.05); }
+.tf-btn.tf-active { background: var(--orange); color: #fff; }
+
+.tf-divider {
+  width: 1px; height: 22px;
+  background: var(--border2);
+  flex-shrink: 0;
+}
+
+.tf-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tf-lbl { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+.tf-date {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 4px 8px;
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  height: 28px;
+  transition: border-color .15s;
+}
+.tf-date:focus { border-color: var(--orange); }
+
+.tf-apply {
+  padding: 4px 13px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  height: 28px;
+  white-space: nowrap;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.tf-apply:hover { background: var(--orange-deep); }
+
+.tf-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--orange-light);
+  color: var(--orange);
+  border: 1px solid var(--orange-mid);
+  white-space: nowrap;
+  font-weight: 600;
+  flex-shrink: 0;
+  display: none;
+}
+
+.tf-clear {
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  height: 26px;
+  transition: all .15s;
+  flex-shrink: 0;
+  display: none;
+}
+.tf-clear:hover { border-color: var(--red); color: var(--red); }
+
+.tf-count {
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.tf-count strong { color: var(--orange); font-weight: 700; }
+
+/* ═══════════════════════════════
+   CATEGORY TABS (Game Casual / Game Bài)
+═══════════════════════════════ */
+.cat-tabbar {
+  background: var(--white);
+  border-bottom: 1.5px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.cat-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.cat-tab:hover { color: var(--text2); }
+
+.cat-tab.active {
+  color: var(--orange);
+  border-bottom-color: var(--orange);
+}
+
+.cat-tab-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+}
+
+.cat-tab .tab-n {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--card2);
+  color: var(--text3);
+}
+
+.cat-tab.active .tab-n {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
+/* Sub-tabs (KPI tabs inside category) */
+.subtab-bar {
+  background: var(--card2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.subtab-btn {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: all .15s;
+}
+
+.subtab-btn:hover { color: var(--text2); }
+.subtab-btn.active { color: var(--orange); border-bottom-color: var(--orange); font-weight: 600; }
+
+/* ═══════════════════════════════
+   PAGE CONTENT
+═══════════════════════════════ */
+.page { padding: 24px 28px; max-width: 1400px; }
+
+.cat-pane { display: none; }
+.cat-pane.active { display: block; }
+
+.sub-pane { display: none; }
+.sub-pane.active { display: block; }
+
+/* Section label */
+.slabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slabel::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ═══════════════════════════════
+   KPI STRIP
+═══════════════════════════════ */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+@media(max-width:1000px){ .kpi-strip { grid-template-columns: repeat(3,1fr); } }
+@media(max-width:600px) { .kpi-strip { grid-template-columns: repeat(2,1fr); } }
+
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: box-shadow .15s;
+}
+
+.kpi-card:hover { box-shadow: var(--shadow-md); }
+
+.kpi-card.highlight {
+  background: var(--orange);
+  border-color: var(--orange-deep);
+}
+
+.kpi-card.highlight .kpi-label { color: rgba(255,255,255,.7); }
+.kpi-card.highlight .kpi-val { color: #fff; }
+.kpi-card.highlight .kpi-sub { color: rgba(255,255,255,.8); }
+
+.kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  margin-bottom: 7px;
+}
+
+.kpi-val {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.kpi-sub { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+.c-up { color: var(--green); font-weight: 600; }
+.c-dn { color: var(--red); font-weight: 600; }
+.c-ok { color: var(--orange); font-weight: 600; }
+.c-warn { color: var(--amber); font-weight: 600; }
+
+/* ═══════════════════════════════
+   RANKING TABLE
+═══════════════════════════════ */
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+}
+
+.dt { width: 100%; border-collapse: collapse; }
+
+.dt th {
+  padding: 10px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  background: var(--card2);
+  border-bottom: 1.5px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.dt td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.dt tr:last-child td { border-bottom: none; }
+.dt tr:hover td { background: var(--orange-light); }
+
+.pg-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pg-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mono { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+.sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+.mini-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+
+.mini-bar {
+  flex: 1; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mini-fill { height: 100%; border-radius: 2px; }
+
+.rnk {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--card2);
+  color: var(--text3);
+  border: 1px solid var(--border);
+}
+
+.rnk.g { background: #FFF3CD; color: #92400E; border-color: #FDE68A; }
+.rnk.s { background: var(--orange-light); color: var(--orange); border-color: var(--orange-mid); }
+.rnk.b { background: var(--green-lt); color: var(--green); border-color: #A7F3D0; }
+
+.health-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════
+   CHART CARDS
+═══════════════════════════════ */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+@media(max-width:900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.cc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.cc-head { margin-bottom: 14px; }
+.cc-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.cc-sub { font-size: 11px; color: var(--text3); }
+
+/* ═══════════════════════════════
+   INSIGHTS
+═══════════════════════════════ */
+.ins-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+@media(max-width:900px) { .ins-grid { grid-template-columns: 1fr; } }
+
+.ins-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow);
+}
+
+.ins-card.pos { border-left: 3px solid var(--green); }
+.ins-card.neg { border-left: 3px solid var(--red); }
+.ins-card.warn { border-left: 3px solid var(--orange); }
+
+.ins-ico { font-size: 16px; flex-shrink: 0; }
+.ins-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.ins-body { font-size: 11px; color: var(--text2); line-height: 1.65; }
+
+/* ═══════════════════════════════
+   PAGE PILLS (trend selector)
+═══════════════════════════════ */
+.pills-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.page-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid;
+  background: transparent;
+  transition: all .15s;
+  font-family: var(--sans);
+}
+
+/* ═══════════════════════════════
+   REPORT TAB
+═══════════════════════════════ */
+.report-header {
+  background: var(--orange);
+  border-radius: var(--r);
+  padding: 28px 28px 24px;
+  margin-bottom: 22px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.report-header::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.07);
+}
+
+.report-header::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; right: 80px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+}
+
+.rep-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; letter-spacing: -.3px; }
+.rep-period { font-size: 12px; opacity: .8; margin-bottom: 22px; }
+
+.rep-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 10px;
+}
+
+@media(max-width:700px){ .rep-kpi-row { grid-template-columns: repeat(2,1fr); } }
+
+.rep-kpi {
+  background: rgba(255,255,255,.15);
+  border-radius: var(--r-sm);
+  padding: 13px 14px;
+  backdrop-filter: blur(4px);
+}
+
+.rep-kpi-val {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.rep-kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+.page-perf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.pp-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 15px;
+  box-shadow: var(--shadow);
+}
+
+.pp-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.pp-er {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.pp-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text3);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pp-row:last-of-type { border-bottom: none; }
+
+.pp-bar-bg {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.pp-bar-fill { height: 100%; border-radius: 2px; }
+
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.action-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 13px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow);
+}
+
+.action-item.p1 { border-left: 3px solid var(--red); }
+.action-item.p2 { border-left: 3px solid var(--orange); }
+.action-item.p3 { border-left: 3px solid var(--blue); }
+
+.ap {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+
+.ap.p1 { background: var(--red-lt); color: var(--red); }
+.ap.p2 { background: var(--orange-light); color: var(--orange); }
+.ap.p3 { background: var(--blue-lt); color: var(--blue); }
+
+.a-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.a-desc { font-size: 11px; color: var(--text2); line-height: 1.65; }
+
+/* ═══════════════════════════════
+   PER-PAGE ANALYSIS CARDS (Report tab)
+═══════════════════════════════ */
+.page-analysis-list{display:flex;flex-direction:column;gap:14px;margin-bottom:22px;}
+.pa-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+.pa-header{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);background:var(--card2);}
+.pa-color-bar{width:4px;height:44px;border-radius:2px;flex-shrink:0;}
+.pa-title-block{flex:1;min-width:0;}
+.pa-page-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.pa-kpi-row{display:flex;gap:18px;flex-wrap:wrap;}
+.pa-kpi{display:flex;flex-direction:column;gap:1px;}
+.pa-kpi-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);line-height:1;}
+.pa-kpi-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+.pa-badge{flex-shrink:0;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;white-space:nowrap;align-self:center;}
+.pa-body{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){.pa-body{grid-template-columns:1fr;}}
+.pa-sec-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.pa-list{display:flex;flex-direction:column;gap:5px;}
+.pa-item{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text2);line-height:1.6;}
+.pa-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.pa-prio{font-size:9px;font-weight:700;padding:1px 7px;border-radius:4px;flex-shrink:0;align-self:flex-start;margin-top:3px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.pa-prio.hi{background:var(--red-lt);color:var(--red);}
+.pa-prio.md{background:var(--orange-light);color:var(--orange);}
+.pa-prio.lo{background:var(--blue-lt);color:var(--blue);}
+
+/* Sort controls */
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.sort-label { font-size: 11px; color: var(--text3); }
+
+.sort-pills {
+  display: flex;
+  gap: 3px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 3px;
+}
+
+.sp {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all .15s;
+}
+
+.sp:hover { color: var(--text2); }
+.sp.active { background: var(--orange); color: #fff; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     UPLOAD SCREEN
+══════════════════════════════════════ -->
+<div id="uploadScreen">
+<div class="up-inner">
+
+  <div class="up-header">
+    <div class="up-wordmark">
+      <div class="up-logo-box">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="7" height="7" rx="1.8" fill="white"/>
+          <rect x="11" y="2" width="7" height="7" rx="1.8" fill="white"/>
+          <rect x="2" y="11" width="7" height="7" rx="1.8" fill="white"/>
+          <rect x="11" y="11" width="7" height="7" rx="1.8" fill="rgba(255,255,255,0.55)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="up-brand-name">ZingPlay</div>
+        <div class="up-brand-sub">Portfolio Dashboard</div>
+      </div>
+    </div>
+    <div class="up-sep"></div>
+    <div class="up-period-badge">Meta Business Suite CSV</div>
+  </div>
+
+  <div class="up-hero">
+    <div class="up-h1">Track toàn bộ fanpage<br><span>ZingPlay</span> trong một nơi.</div>
+    <div class="up-h2">Upload CSV từ Meta Business Suite cho Game Casual và Game Bài. Dashboard tự động so sánh Reach, Engagement Rate, Video Views và Post Frequency giữa tất cả fanpage trong portfolio.</div>
+  </div>
+
+  <!-- 2 category panels -->
+  <div class="up-cats">
+    <!-- Game Casual -->
+    <div class="up-cat-panel">
+      <div class="up-cat-header">
+        <div class="up-cat-dot" style="background:#FF6B00;box-shadow:0 0 6px #FF6B00aa"></div>
+        <span class="up-cat-title">Game Casual</span>
+        <span class="up-cat-count" id="casual-count">0 fanpage</span>
+      </div>
+      <div class="up-zones-inner" id="zones-casual"></div>
+      <div class="up-add-row">
+        <input class="up-add-input" id="inp-casual" placeholder="Tên fanpage Game Casual…" onkeydown="if(event.key==='Enter') addPage('casual')">
+        <button class="up-add-btn" onclick="addPage('casual')">+ Thêm</button>
+      </div>
+    </div>
+
+    <!-- Game Bài -->
+    <div class="up-cat-panel">
+      <div class="up-cat-header">
+        <div class="up-cat-dot" style="background:#B45309;box-shadow:0 0 6px #B45309aa"></div>
+        <span class="up-cat-title">Game Bài</span>
+        <span class="up-cat-count" id="bai-count">0 fanpage</span>
+      </div>
+      <div class="up-zones-inner" id="zones-bai"></div>
+      <div class="up-add-row">
+        <input class="up-add-input" id="inp-bai" placeholder="Tên fanpage Game Bài…" onkeydown="if(event.key==='Enter') addPage('bai')">
+        <button class="up-add-btn" onclick="addPage('bai')">+ Thêm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="up-footer">
+    <div class="up-hint">Chưa có file? <a href="#" onclick="loadDemo();return false;">Load demo data →</a></div>
+    <button class="btn-launch" id="startBtn" onclick="launch()" disabled>Xem Portfolio →</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     APP
+══════════════════════════════════════ -->
+<div id="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.8" fill="white"/><rect x="11" y="2" width="7" height="7" rx="1.8" fill="white"/><rect x="2" y="11" width="7" height="7" rx="1.8" fill="white"/><rect x="11" y="11" width="7" height="7" rx="1.8" fill="rgba(255,255,255,0.55)"/></svg>
+      </div>
+      <span class="tb-brand">Zing<span>Play</span></span>
+      <div class="tb-sep"></div>
+      <span class="tb-period" id="tb-period">—</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-pill" id="tb-pages">—</span>
+      <button class="btn-reset" onclick="resetApp()">↩ Upload lại</button>
+    </div>
+  </div>
+
+  <!-- Category tabs -->
+  <!-- ── TIMEFRAME BAR ── -->
+  <div class="tf-bar">
+    <span class="tf-label">Timeframe</span>
+    <div class="tf-presets">
+      <button class="tf-btn tf-active" data-preset="all"       onclick="setTf('all',this)">Tất cả</button>
+      <button class="tf-btn"           data-preset="7d"        onclick="setTf('7d',this)">7 ngày</button>
+      <button class="tf-btn"           data-preset="14d"       onclick="setTf('14d',this)">14 ngày</button>
+      <button class="tf-btn"           data-preset="30d"       onclick="setTf('30d',this)">30 ngày</button>
+      <button class="tf-btn"           data-preset="thismonth" onclick="setTf('thismonth',this)">Tháng này</button>
+      <button class="tf-btn"           data-preset="lastmonth" onclick="setTf('lastmonth',this)">Tháng trước</button>
+      <button class="tf-btn"           data-preset="q1"        onclick="setTf('q1',this)">Q1</button>
+      <button class="tf-btn"           data-preset="q2"        onclick="setTf('q2',this)">Q2</button>
+      <button class="tf-btn"           data-preset="q3"        onclick="setTf('q3',this)">Q3</button>
+      <button class="tf-btn"           data-preset="q4"        onclick="setTf('q4',this)">Q4</button>
+    </div>
+    <div class="tf-divider"></div>
+    <div class="tf-custom">
+      <span class="tf-lbl">Từ</span>
+      <input type="date" class="tf-date" id="tf-from">
+      <span class="tf-lbl">đến</span>
+      <input type="date" class="tf-date" id="tf-to">
+      <button class="tf-apply" onclick="applyTfRange()">Áp dụng</button>
+    </div>
+    <div class="tf-divider"></div>
+    <span class="tf-badge" id="tf-badge"></span>
+    <button class="tf-clear" id="tf-clear" onclick="setTf('all',document.querySelector('[data-preset=all]'))">✕ Bỏ filter</button>
+    <span class="tf-count" id="tf-count"></span>
+  </div>
+
+  <div class="cat-tabbar">
+    <button class="cat-tab active" id="cattab-casual" onclick="switchCat('casual',this)">
+      <span class="cat-tab-dot" style="background:#FF6B00"></span>
+      Casual Game
+      <span class="tab-n" id="ctab-n-casual">0</span>
+    </button>
+    <button class="cat-tab" id="cattab-bai" onclick="switchCat('bai',this)">
+      <span class="cat-tab-dot" style="background:#B45309"></span>
+      Card Game
+      <span class="tab-n" id="ctab-n-bai">0</span>
+    </button>
+  </div>
+
+  <!-- Sub-tabs (same for both categories, rendered per cat) -->
+  <div class="subtab-bar" id="subtab-bar">
+    <button class="subtab-btn active" onclick="switchSub('overview',this)">📊 Overview</button>
+    <button class="subtab-btn" onclick="switchSub('reach',this)">📡 Reach</button>
+    <button class="subtab-btn" onclick="switchSub('er',this)">⚡ Engagement Rate</button>
+    <button class="subtab-btn" onclick="switchSub('video',this)">🎬 Video Views</button>
+    <button class="subtab-btn" onclick="switchSub('frequency',this)">📅 Post Frequency</button>
+    <button class="subtab-btn" onclick="switchSub('report',this)">📄 Monthly Report</button>
+  </div>
+
+  <div class="page">
+
+    <!-- ─── CAT: CASUAL ─── -->
+    <div id="cat-casual" class="cat-pane active">
+
+      <!-- Overview -->
+      <div id="casual-overview" class="sub-pane active">
+        <div class="kpi-strip" id="casual-kpi-strip"></div>
+        <div class="sort-row">
+          <span class="sort-label">Sắp xếp:</span>
+          <div class="sort-pills">
+            <button class="sp active" onclick="setSort('casual','er',this)">ER%</button>
+            <button class="sp" onclick="setSort('casual','reach',this)">Reach</button>
+            <button class="sp" onclick="setSort('casual','video',this)">Video</button>
+            <button class="sp" onclick="setSort('casual','freq',this)">Frequency</button>
+          </div>
+        </div>
+        <div class="table-wrap"><div style="overflow-x:auto">
+          <table class="dt">
+            <thead><tr>
+              <th>#</th><th>Fanpage</th><th>Reach</th><th>Organic / Paid</th>
+              <th>ER%</th><th>Org ER%</th><th>Video Views</th>
+              <th>Posts</th><th>Posts/wk</th><th>Health</th>
+            </tr></thead>
+            <tbody id="casual-rank-tbody"></tbody>
+          </table>
+        </div></div>
+        <div class="ins-grid" id="casual-insights"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Reach share</div><div class="cc-sub">% tổng reach thuộc về từng fanpage</div></div><canvas id="casual-c-share" height="210"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% so sánh</div><div class="cc-sub">Benchmark: 1% (cam) và 3% (xanh)</div></div><canvas id="casual-c-er-bar" height="210"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Reach -->
+      <div id="casual-reach" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Organic vs Paid Reach</div><div class="cc-sub">Stacked bar từng fanpage</div></div><canvas id="casual-c-reach-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Paid dependency %</div><div class="cc-sub">Thấp hơn = organic tốt hơn</div></div><canvas id="casual-c-paid-dep" height="220"></canvas></div>
+        </div>
+        <div class="slabel">Trend reach — chọn fanpage</div>
+        <div class="pills-row" id="casual-reach-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Reach theo ngày</div><div class="cc-sub">Organic vs Paid theo thời gian</div></div><canvas id="casual-c-reach-trend" height="230"></canvas></div>
+      </div>
+
+      <!-- ER -->
+      <div id="casual-er" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc" style="grid-column:span 1"><div class="cc-head"><div class="cc-title">ER% tất cả fanpage theo thời gian</div><div class="cc-sub">Multi-line — benchmark 1% và 3%</div></div><canvas id="casual-c-er-multi" height="230"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Engagement breakdown portfolio</div><div class="cc-sub">Reactions · Comments · Shares</div></div><canvas id="casual-c-eng-donut" height="230"></canvas></div>
+        </div>
+        <div class="slabel">Chi tiết từng fanpage</div>
+        <div class="pills-row" id="casual-er-pills"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% vs Organic ER%</div><div class="cc-sub">Khoảng cách = paid audience kém liên quan</div></div><canvas id="casual-c-er-detail" height="210"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Engagement mix theo ngày</div><div class="cc-sub">Reactions · Comments · Shares</div></div><canvas id="casual-c-eng-detail" height="210"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Video -->
+      <div id="casual-video" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">3s Video Views so sánh</div><div class="cc-sub">Tổng views theo fanpage</div></div><canvas id="casual-c-vid-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Video share trong content mix</div><div class="cc-sub">% bài video / tổng bài</div></div><canvas id="casual-c-vid-pct" height="220"></canvas></div>
+        </div>
+        <div class="slabel">Trend video — chọn fanpage</div>
+        <div class="pills-row" id="casual-video-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Video views theo ngày</div><div class="cc-sub">3-second plays timeline</div></div><canvas id="casual-c-vid-trend" height="230"></canvas></div>
+      </div>
+
+      <!-- Frequency -->
+      <div id="casual-frequency" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Posts/tuần so sánh</div><div class="cc-sub">Benchmark: 3–5 posts/tuần</div></div><canvas id="casual-c-freq-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Ngày đăng bài nhiều nhất (DOW)</div><div class="cc-sub">Số bài và avg reach theo thứ</div></div><canvas id="casual-c-dow" height="220"></canvas></div>
+        </div>
+        <div class="slabel">Trend frequency — chọn fanpage</div>
+        <div class="pills-row" id="casual-freq-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Posts timeline</div><div class="cc-sub">Tần suất và reach theo ngày</div></div><canvas id="casual-c-freq-trend" height="230"></canvas></div>
+      </div>
+
+      <!-- Report -->
+      <div id="casual-report" class="sub-pane">
+        <div class="report-header">
+          <div class="rep-title" id="casual-rep-title">Casual Game — Portfolio Report</div>
+          <div class="rep-period" id="casual-rep-period">—</div>
+          <div class="rep-kpi-row" id="casual-rep-kpis"></div>
+        </div>
+        <div class="slabel">Performance từng fanpage</div>
+        <div class="page-perf-grid" id="casual-rep-pages"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% ranking</div><div class="cc-sub">Top fanpage engagement</div></div><canvas id="casual-rep-er" height="200"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Reach & Video ranking</div><div class="cc-sub">Horizontal comparison</div></div><canvas id="casual-rep-reach" height="200"></canvas></div>
+        </div>
+        <div class="slabel">Action items — tháng tới</div>
+        <div class="action-list" id="casual-rep-actions"></div>
+        <div class="slabel">Phân tích chi tiết từng fanpage</div>
+        <div class="page-analysis-list" id="casual-rep-analysis"></div>
+      </div>
+
+    </div><!-- /cat-casual -->
+
+    <!-- ─── CAT: BÀI ─── -->
+    <div id="cat-bai" class="cat-pane">
+      <div id="bai-overview" class="sub-pane active">
+        <div class="kpi-strip" id="bai-kpi-strip"></div>
+        <div class="sort-row">
+          <span class="sort-label">Sắp xếp:</span>
+          <div class="sort-pills">
+            <button class="sp active" onclick="setSort('bai','er',this)">ER%</button>
+            <button class="sp" onclick="setSort('bai','reach',this)">Reach</button>
+            <button class="sp" onclick="setSort('bai','video',this)">Video</button>
+            <button class="sp" onclick="setSort('bai','freq',this)">Frequency</button>
+          </div>
+        </div>
+        <div class="table-wrap"><div style="overflow-x:auto">
+          <table class="dt">
+            <thead><tr>
+              <th>#</th><th>Fanpage</th><th>Reach</th><th>Organic / Paid</th>
+              <th>ER%</th><th>Org ER%</th><th>Video Views</th>
+              <th>Posts</th><th>Posts/wk</th><th>Health</th>
+            </tr></thead>
+            <tbody id="bai-rank-tbody"></tbody>
+          </table>
+        </div></div>
+        <div class="ins-grid" id="bai-insights"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Reach share</div><div class="cc-sub">% tổng reach thuộc về từng fanpage</div></div><canvas id="bai-c-share" height="210"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% so sánh</div><div class="cc-sub">Benchmark: 1% và 3%</div></div><canvas id="bai-c-er-bar" height="210"></canvas></div>
+        </div>
+      </div>
+      <div id="bai-reach" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Organic vs Paid Reach</div></div><canvas id="bai-c-reach-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Paid dependency %</div></div><canvas id="bai-c-paid-dep" height="220"></canvas></div>
+        </div>
+        <div class="slabel">Trend reach — chọn fanpage</div>
+        <div class="pills-row" id="bai-reach-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Reach theo ngày</div></div><canvas id="bai-c-reach-trend" height="230"></canvas></div>
+      </div>
+      <div id="bai-er" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% tất cả fanpage</div></div><canvas id="bai-c-er-multi" height="230"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Engagement breakdown</div></div><canvas id="bai-c-eng-donut" height="230"></canvas></div>
+        </div>
+        <div class="pills-row" id="bai-er-pills"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% vs Organic ER%</div></div><canvas id="bai-c-er-detail" height="210"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Engagement mix</div></div><canvas id="bai-c-eng-detail" height="210"></canvas></div>
+        </div>
+      </div>
+      <div id="bai-video" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Video Views so sánh</div></div><canvas id="bai-c-vid-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Video share trong mix</div></div><canvas id="bai-c-vid-pct" height="220"></canvas></div>
+        </div>
+        <div class="pills-row" id="bai-video-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Video views theo ngày</div></div><canvas id="bai-c-vid-trend" height="230"></canvas></div>
+      </div>
+      <div id="bai-frequency" class="sub-pane">
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">Posts/tuần so sánh</div></div><canvas id="bai-c-freq-cmp" height="220"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">DOW — ngày đăng nhiều nhất</div></div><canvas id="bai-c-dow" height="220"></canvas></div>
+        </div>
+        <div class="pills-row" id="bai-freq-pills"></div>
+        <div class="cc"><div class="cc-head"><div class="cc-title">Posts timeline</div></div><canvas id="bai-c-freq-trend" height="230"></canvas></div>
+      </div>
+      <div id="bai-report" class="sub-pane">
+        <div class="report-header" style="background:#92400E">
+          <div class="rep-title" id="bai-rep-title">Card Game — Portfolio Report</div>
+          <div class="rep-period" id="bai-rep-period">—</div>
+          <div class="rep-kpi-row" id="bai-rep-kpis"></div>
+        </div>
+        <div class="slabel">Performance từng fanpage</div>
+        <div class="page-perf-grid" id="bai-rep-pages"></div>
+        <div class="grid-2">
+          <div class="cc"><div class="cc-head"><div class="cc-title">ER% ranking</div></div><canvas id="bai-rep-er" height="200"></canvas></div>
+          <div class="cc"><div class="cc-head"><div class="cc-title">Reach ranking</div></div><canvas id="bai-rep-reach" height="200"></canvas></div>
+        </div>
+        <div class="slabel">Action items</div>
+        <div class="action-list" id="bai-rep-actions"></div>
+        <div class="slabel">Phân tích chi tiết từng fanpage</div>
+        <div class="page-analysis-list" id="bai-rep-analysis"></div>
+      </div>
+    </div><!-- /cat-bai -->
+
+  </div><!-- .page -->
+</div><!-- #app -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+const CATS = {
+  casual: {
+    name: 'Casual Game',
+    color: '#FF6B00',
+    pages: [], // [{name, color, data}]
+    pageColors: ['#FF6B00','#FF8C33','#FFA85C','#FFB87A','#FFC99A','#FFD9B8','#E05A00','#C24A00'],
+    sort: 'er',
+  },
+  bai: {
+    name: 'Card Game',
+    color: '#B45309',
+    pages: [],
+    pageColors: ['#B45309','#D97706','#F59E0B','#FBBF24','#92400E','#78350F','#A16207','#CA8A04'],
+    sort: 'er',
+  }
+};
+
+let activeCat = 'casual';
+let activeSub = 'overview';
+
+// Chart registry per canvas id
+const chartReg = {};
+function dc(id) { if(chartReg[id]) { chartReg[id].destroy(); delete chartReg[id]; } }
+function rc(id, config) { dc(id); const el = document.getElementById(id); if(!el) return; chartReg[id] = new Chart(el, config); }
+
+const cfg  = { color:'#6B6560', font:{ family:'Plus Jakarta Sans', size:11 } };
+const grid = { color:'rgba(0,0,0,.05)' };
+
+// ══════════════════════════════════════════
+// PAGE MANAGEMENT
+// ══════════════════════════════════════════
+function addPage(cat) {
+  const inp = document.getElementById('inp-'+cat);
+  const name = (inp?.value||'').trim();
+  if (!name) return;
+  const c = CATS[cat];
+  if (c.pages.find(p=>p.name===name)) return;
+  c.pages.push({ name, color: c.pageColors[c.pages.length % c.pageColors.length], data: null });
+  inp.value = '';
+  renderUploadZones(cat);
+  checkStart();
+}
+
+function removePage(cat, name) {
+  CATS[cat].pages = CATS[cat].pages.filter(p=>p.name!==name);
+  renderUploadZones(cat);
+  checkStart();
+}
+
+function renderUploadZones(cat) {
+  const c = CATS[cat];
+  const el = document.getElementById('zones-'+cat);
+  if (!el) return;
+  el.innerHTML = c.pages.map(p => `
+    <div class="up-zone${p.data?' loaded':''}" id="upzone-${cat}-${p.name.replace(/\s/g,'_')}"
+      ondragover="dov(event,'${cat}','${p.name}')" ondragleave="dlv('${cat}','${p.name}')"
+      ondrop="ddr(event,'${cat}','${p.name}')">
+      <input type="file" accept=".csv" onchange="handleFile(event,'${cat}','${p.name}')">
+      <span style="position:absolute;top:6px;right:9px;font-size:13px;color:var(--text3);cursor:pointer;z-index:10;line-height:1" onclick="event.stopPropagation();removePage('${cat}','${p.name}')">×</span>
+      <div class="up-zone-icon">${p.data ? '✅' : '📊'}</div>
+      <div class="up-zone-info">
+        <div class="up-zone-name"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${p.color};margin-right:6px;vertical-align:middle;"></span>${p.name}</div>
+        <div class="up-zone-hint">${p.data ? '' : 'Upload CSV từ Meta'}</div>
+      </div>
+      <div class="up-zone-ok">${p.data ? '✓ Loaded' : ''}</div>
+    </div>
+  `).join('');
+  const cnt = document.getElementById(cat+'-count');
+  if (cnt) cnt.textContent = c.pages.length + ' fanpage';
+}
+
+function zoneId(cat, name) { return 'upzone-'+cat+'-'+name.replace(/\s/g,'_'); }
+function dov(e, cat, name) { e.preventDefault(); document.getElementById(zoneId(cat,name))?.classList.add('dragover'); }
+function dlv(cat, name) { document.getElementById(zoneId(cat,name))?.classList.remove('dragover'); }
+function ddr(e, cat, name) { e.preventDefault(); dlv(cat,name); const f=e.dataTransfer.files[0]; if(f) parseCSV(f,cat,name); }
+function handleFile(e, cat, name) { parseCSV(e.target.files[0], cat, name); }
+
+function parseCSV(file, cat, name) {
+  Papa.parse(file, { header:true, skipEmptyLines:true, comments:'#', complete(res) {
+    const pg = CATS[cat].pages.find(p=>p.name===name);
+    if (pg) { pg.data = res.data; pg.fileName = file.name; }
+    renderUploadZones(cat);
+    checkStart();
+  }});
+}
+
+function checkStart() {
+  const hasData = Object.values(CATS).some(c=>c.pages.some(p=>p.data));
+  document.getElementById('startBtn').disabled = !hasData;
+}
+
+function loadDemo() {
+  CATS.casual.pages = [];
+  CATS.bai.pages = [];
+  const demoData = {
+    casual: [
+      { name:'ZingPlay Official', er:3.8, rb:90000 },
+      { name:'Game Nông Trại', er:2.2, rb:55000 },
+      { name:'Game Bắn Cá', er:4.1, rb:68000 },
+      { name:'ZingSpeed Mobile', er:1.6, rb:42000 },
+    ],
+    bai: [
+      { name:'Tiến Lên VN', er:3.1, rb:62000 },
+      { name:'Phỏm Online', er:2.6, rb:47000 },
+      { name:'Mậu Binh VN', er:1.9, rb:35000 },
+    ]
+  };
+  Object.entries(demoData).forEach(([cat, list]) => {
+    list.forEach((d, di) => {
+      const color = CATS[cat].pageColors[di];
+      const rows = genRows(d.rb, d.er);
+      CATS[cat].pages.push({ name:d.name, color, data:rows, fileName:'demo' });
+    });
+  });
+  ['casual','bai'].forEach(c => renderUploadZones(c));
+  checkStart();
+}
+
+function genRows(reachBase, erPct) {
+  const rows = [];
+  for (let i=1; i<=31; i++) {
+    const j = 0.7 + Math.random()*0.6;
+    const wk = (i%7===0||i%7===6) ? 1.35 : 1;
+    const reach = Math.round(reachBase * j * wk);
+    const orgR  = Math.round(reach * (0.42 + Math.random()*0.28));
+    const paidR = reach - orgR;
+    const eng   = Math.round(reach * (erPct/100) * (0.8+Math.random()*0.4));
+    const react = Math.round(eng*0.62); const cmt=Math.round(eng*0.14); const shr=Math.round(eng*0.11); const clk=eng-react-cmt-shr;
+    const isV   = i%3===0;
+    rows.push({
+      'Publish time': `2025-01-${String(i).padStart(2,'0')} 10:00:00`,
+      'Post type': isV ? 'Video' : (i%3===1 ? 'Photo' : 'Carousel'),
+      'Reach':reach, 'Reach from Organic posts':orgR, 'Reach from Boosted posts':paidR,
+      'Reactions':react, 'Comments':cmt, 'Shares':shr, 'Total clicks':clk,
+      '3-second video views': isV ? Math.round(orgR*0.52) : 0,
+      'New Followers': Math.round(50+Math.random()*110),
+    });
+  }
+  return rows;
+}
+
+function resetApp() {
+  document.getElementById('app').style.display='none';
+  document.getElementById('uploadScreen').style.display='flex';
+}
+
+function launch() {
+  document.getElementById('uploadScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  initTfDates();
+  buildCat('casual');
+  buildCat('bai');
+  updateTopbar();
+}
+
+// Helper: update the "X fanpage" counter on upload screen
+function updateSlotCounts() {
+  ['casual','bai'].forEach(cat => {
+    const el = document.getElementById(cat+'-count');
+    if (el) el.textContent = CATS[cat].pages.length + ' fanpage';
+  });
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// TIMEFRAME FILTER
+// ══════════════════════════════════════════
+const TF = { from: null, to: null, preset: 'all' };
+
+function filterRows(rows) {
+  if (!TF.from && !TF.to) return rows;
+  return rows.filter(r => {
+    const d = new Date(r['Publish time'] || r['Date'] || '');
+    if (isNaN(d)) return true;
+    if (TF.from && d < TF.from) return false;
+    if (TF.to   && d > TF.to)   return false;
+    return true;
+  });
+}
+
+function setTf(preset, btn) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('tf-active'));
+  btn.classList.add('tf-active');
+  TF.preset = preset;
+  const now = new Date();
+  const y   = now.getFullYear();
+  const tod = new Date(now); tod.setHours(23,59,59,999);
+  if (preset === 'all') {
+    TF.from = null; TF.to = null;
+  } else if (preset === '7d') {
+    TF.from = new Date(now - 6*864e5); TF.to = tod;
+  } else if (preset === '14d') {
+    TF.from = new Date(now - 13*864e5); TF.to = tod;
+  } else if (preset === '30d') {
+    TF.from = new Date(now - 29*864e5); TF.to = tod;
+  } else if (preset === 'thismonth') {
+    TF.from = new Date(y, now.getMonth(), 1);
+    TF.to   = new Date(y, now.getMonth()+1, 0, 23,59,59);
+  } else if (preset === 'lastmonth') {
+    TF.from = new Date(y, now.getMonth()-1, 1);
+    TF.to   = new Date(y, now.getMonth(), 0, 23,59,59);
+  } else if (preset === 'q1') { TF.from=new Date(y,0,1);  TF.to=new Date(y,2,31,23,59,59); }
+  else if   (preset === 'q2') { TF.from=new Date(y,3,1);  TF.to=new Date(y,5,30,23,59,59); }
+  else if   (preset === 'q3') { TF.from=new Date(y,6,1);  TF.to=new Date(y,8,30,23,59,59); }
+  else if   (preset === 'q4') { TF.from=new Date(y,9,1);  TF.to=new Date(y,11,31,23,59,59); }
+  document.getElementById('tf-from').value = TF.from ? TF.from.toISOString().slice(0,10) : '';
+  document.getElementById('tf-to').value   = TF.to   ? TF.to.toISOString().slice(0,10)   : '';
+  updateTfUI();
+  rebuildAll();
+}
+
+function applyTfRange() {
+  const fv = document.getElementById('tf-from').value;
+  const tv = document.getElementById('tf-to').value;
+  if (!fv && !tv) { setTf('all', document.querySelector('[data-preset=all]')); return; }
+  TF.from   = fv ? new Date(fv + 'T00:00:00') : null;
+  TF.to     = tv ? new Date(tv + 'T23:59:59') : null;
+  TF.preset = 'custom';
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('tf-active'));
+  updateTfUI();
+  rebuildAll();
+}
+
+function updateTfUI() {
+  const badge    = document.getElementById('tf-badge');
+  const clearBtn = document.getElementById('tf-clear');
+  const countEl  = document.getElementById('tf-count');
+  if (!badge || !clearBtn || !countEl) return;
+  const allPages = [...CATS.casual.pages, ...CATS.bai.pages].filter(p => p.data);
+  const total    = allPages.reduce((s,p) => s+p.data.length, 0);
+  if (TF.preset === 'all' || (!TF.from && !TF.to)) {
+    badge.style.display    = 'none';
+    clearBtn.style.display = 'none';
+    countEl.innerHTML = total ? `<strong>${total}</strong> bài đăng` : '';
+    return;
+  }
+  const presetLabels = { '7d':'7 ngày qua','14d':'14 ngày qua','30d':'30 ngày qua',
+    thismonth:'Tháng này', lastmonth:'Tháng trước', q1:'Q1',q2:'Q2',q3:'Q3',q4:'Q4' };
+  if (TF.preset === 'custom') {
+    const f = TF.from ? TF.from.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}) : '…';
+    const t = TF.to   ? TF.to.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'})   : '…';
+    badge.textContent = f + ' → ' + t;
+  } else {
+    badge.textContent = presetLabels[TF.preset] || TF.preset;
+  }
+  badge.style.display    = 'inline-flex';
+  clearBtn.style.display = 'inline-block';
+  const filtered = allPages.reduce((s,p) => s + filterRows(p.data).length, 0);
+  countEl.innerHTML = `<strong>${filtered}</strong> / ${total} bài`;
+}
+
+function initTfDates() {
+  const allRows = [...CATS.casual.pages,...CATS.bai.pages]
+    .filter(p=>p.data).flatMap(p=>p.data);
+  const dates = allRows.map(r=>new Date(r['Publish time']||r['Date']||'')).filter(d=>!isNaN(d));
+  if (!dates.length) return;
+  const minStr = new Date(Math.min(...dates)).toISOString().slice(0,10);
+  const maxStr = new Date(Math.max(...dates)).toISOString().slice(0,10);
+  const fromEl = document.getElementById('tf-from');
+  const toEl   = document.getElementById('tf-to');
+  if (!fromEl || !toEl) return;
+  fromEl.min = minStr; fromEl.max = maxStr; fromEl.value = minStr;
+  toEl.min   = minStr; toEl.max   = maxStr; toEl.value   = maxStr;
+}
+
+function rebuildAll() {
+  buildCat('casual');
+  buildCat('bai');
+  updateTopbar();
+}
+
+function metrics(rows) {
+  const reach  = rows.reduce((s,r)=>s+(+r['Reach']||0),0);
+  const orgR   = rows.reduce((s,r)=>s+(+r['Reach from Organic posts']||0),0);
+  const paidR  = rows.reduce((s,r)=>s+(+r['Reach from Boosted posts']||0),0);
+  const react  = rows.reduce((s,r)=>s+(+r['Reactions']||0),0);
+  const cmt    = rows.reduce((s,r)=>s+(+r['Comments']||0),0);
+  const shares = rows.reduce((s,r)=>s+(+r['Shares']||0),0);
+  const clicks = rows.reduce((s,r)=>s+(+r['Total clicks']||0),0);
+  const v3s    = rows.reduce((s,r)=>s+(+r['3-second video views']||0),0);
+  const flw    = rows.reduce((s,r)=>s+(+r['New Followers']||0),0);
+  const eng    = react+cmt+shares+clicks;
+  const er     = reach>0 ? eng/reach*100 : 0;
+  const erOrg  = orgR>0  ? eng/orgR*100  : 0;
+  const paidP  = reach>0 ? paidR/reach*100 : 0;
+  const posts  = rows.length;
+  const vidP   = rows.filter(r=>(r['Post type']||'').toLowerCase().includes('video')).length;
+  const dates  = rows.map(r=>new Date(r['Publish time']||r['Date']||'')).filter(d=>!isNaN(d));
+  const days   = dates.length>=2 ? Math.max(1,(Math.max(...dates)-Math.min(...dates))/86400000)+1 : 30;
+  const ppw    = +(posts/days*7).toFixed(1);
+  return { reach,orgR,paidR,react,cmt,shares,clicks,v3s,flw,eng,er,erOrg,paidP,posts,vidP,ppw,days };
+}
+
+function fmt(n) {
+  if(n>=1e6) return (n/1e6).toFixed(1)+'M';
+  if(n>=1e3) return (n/1e3).toFixed(1)+'K';
+  return String(Math.round(n||0));
+}
+
+function hc(er) {
+  if(er>=3) return '#0D9065'; if(er>=1) return '#FF6B00'; if(er>=0.5) return '#B45309'; return '#D93025';
+}
+
+function sortedPages(cat) {
+  const c = CATS[cat];
+  const keyMap = { er:'er', reach:'reach', video:'v3s', freq:'ppw' };
+  const k = keyMap[c.sort]||'er';
+  return c.pages
+    .filter(p => p.data)
+    .map(p => {
+      const filtered = filterRows(p.data);
+      return { ...p, data: filtered, m: metrics(filtered) };
+    })
+    .filter(p => p.data.length > 0)
+    .sort((a,b) => b.m[k]-a.m[k]);
+}
+
+function dayLbl(r) {
+  const d = new Date(r['Publish time']||r['Date']||'');
+  return isNaN(d) ? '' : d.toLocaleDateString('vi-VN',{month:'short',day:'numeric'});
+}
+
+function sortedRows(rows) {
+  return [...rows].sort((a,b)=>new Date(a['Publish time']||a['Date']||'')-new Date(b['Publish time']||b['Date']||'')).filter(r=>r['Publish time']||r['Date']);
+}
+
+function periodStr(pages) {
+  const all = pages.flatMap(p=>p.data||[]);
+  const dates = all.map(r=>new Date(r['Publish time']||r['Date']||'')).filter(d=>!isNaN(d));
+  if (!dates.length) return '—';
+  const mn = new Date(Math.min(...dates)), mx = new Date(Math.max(...dates));
+  return mn.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'})+' – '+mx.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+function updateTopbar() {
+  const allPages = [...CATS.casual.pages, ...CATS.bai.pages].filter(p=>p.data);
+  document.getElementById('tb-pages').textContent = allPages.length + ' fanpages';
+  const allRows = allPages.flatMap(p => filterRows(p.data));
+  const dates = allRows.map(r=>new Date(r['Publish time']||r['Date']||'')).filter(d=>!isNaN(d));
+  if (dates.length) {
+    const mn=new Date(Math.min(...dates)), mx=new Date(Math.max(...dates));
+    document.getElementById('tb-period').textContent = mn.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'})+' – '+mx.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  updateTfUI();
+}
+
+// ══════════════════════════════════════════
+// BUILD PER CAT
+// ══════════════════════════════════════════
+function buildCat(cat) {
+  const pages = sortedPages(cat);
+  const c = CATS[cat];
+  document.getElementById(`ctab-n-${cat}`).textContent = c.pages.filter(p=>p.data).length;
+  if (!pages.length) return;
+
+  buildOverview(cat, pages);
+  buildReach(cat, pages);
+  buildER(cat, pages);
+  buildVideo(cat, pages);
+  buildFreq(cat, pages);
+  buildReport(cat, pages);
+}
+
+// ─── OVERVIEW ───
+function buildOverview(cat, pages) {
+  const tot = {reach:0,eng:0,v3s:0,posts:0};
+  pages.forEach(p=>{tot.reach+=p.m.reach;tot.eng+=p.m.eng;tot.v3s+=p.m.v3s;tot.posts+=p.m.posts;});
+  const avgEr = pages.reduce((s,p)=>s+p.m.er,0)/pages.length;
+  const avgPpw= pages.reduce((s,p)=>s+p.m.ppw,0)/pages.length;
+
+  document.getElementById(`${cat}-kpi-strip`).innerHTML = [
+    {l:'Total Reach',v:fmt(tot.reach),s:pages.length+' fanpages',hi:false},
+    {l:'Total Engagement',v:fmt(tot.eng),s:'Reactions+Cmt+Share',hi:false},
+    {l:'Avg ER%',v:avgEr.toFixed(2)+'%',s:avgEr>=3?'↑ Trên benchmark':avgEr>=1?'Trong benchmark':'↓ Dưới 1%',cls:avgEr>=3?'c-up':avgEr>=1?'c-ok':'c-dn',hi:true},
+    {l:'Video Views (3s)',v:fmt(tot.v3s),s:'Tổng portfolio',hi:false},
+    {l:'Avg Freq',v:avgPpw.toFixed(1)+'/wk',s:avgPpw>=3?'↑ Đủ tần suất':avgPpw>=2?'Ổn':'↓ Cần tăng',cls:avgPpw>=3?'c-up':avgPpw>=2?'c-ok':'c-warn',hi:false},
+  ].map(k=>`<div class="kpi-card${k.hi?' highlight':''}">
+    <div class="kpi-label">${k.l}</div>
+    <div class="kpi-val">${k.v}</div>
+    <div class="kpi-sub ${k.cls||''}">${k.s}</div>
+  </div>`).join('');
+
+  // Ranking table
+  const maxR = Math.max(...pages.map(p=>p.m.reach),1);
+  document.getElementById(`${cat}-rank-tbody`).innerHTML = pages.map((p,i)=>`
+    <tr>
+      <td><div class="rnk ${i===0?'g':i===1?'s':i===2?'b':''}">${i+1}</div></td>
+      <td><div class="pg-name"><span class="pg-dot" style="background:${p.color}"></span>${p.name}</div></td>
+      <td>
+        <div class="mini-bar-wrap">
+          <div class="mini-bar"><div class="mini-fill" style="width:${Math.round(p.m.reach/maxR*100)}%;background:${p.color}"></div></div>
+          <span class="mono">${fmt(p.m.reach)}</span>
+        </div>
+      </td>
+      <td><span class="mono">${fmt(p.m.orgR)}</span><div class="sub">Paid: ${fmt(p.m.paidR)} (${p.m.paidP.toFixed(0)}%)</div></td>
+      <td><span class="mono" style="color:${hc(p.m.er)};font-weight:600">${p.m.er.toFixed(2)}%</span></td>
+      <td><span class="mono">${p.m.erOrg.toFixed(1)}%</span></td>
+      <td><span class="mono">${p.m.v3s>0?fmt(p.m.v3s):'—'}</span></td>
+      <td><span class="mono">${p.m.posts}</span></td>
+      <td><span class="mono" style="color:${p.m.ppw>=3?'var(--green)':p.m.ppw>=2?'var(--amber)':'var(--red)'}">${p.m.ppw}/wk</span></td>
+      <td><span class="health-dot" style="background:${hc(p.m.er)}"></span></td>
+    </tr>
+  `).join('');
+
+  // Insights
+  const best=pages[0], worst=pages[pages.length-1];
+  const topR=[...pages].sort((a,b)=>b.m.reach-a.m.reach)[0];
+  const lowF=pages.filter(p=>p.m.ppw<2);
+  document.getElementById(`${cat}-insights`).innerHTML = [
+    {cls:'pos',ico:'🏆',t:`${best.name} dẫn đầu ER: ${best.m.er.toFixed(2)}%`,b:`${best.m.er>=3?'Vượt benchmark 3%':'Đang ở mức tốt'}. Phân tích content mix của page này để nhân rộng cho các page khác.`},
+    {cls:'pos',ico:'📡',t:`${topR.name} reach cao nhất: ${fmt(topR.m.reach)}`,b:`Chiếm ${Math.round(topR.m.reach/tot.reach*100)}% tổng reach của category. Organic ${fmt(topR.m.orgR)} · Paid ${fmt(topR.m.paidR)}.`},
+    {cls:lowF.length?'warn':'pos',ico:lowF.length?'⚠️':'✅',t:lowF.length?`${lowF.map(p=>p.name).join(', ')} — tần suất thấp`:`Tần suất portfolio ổn — avg ${avgPpw.toFixed(1)} bài/tuần`,b:lowF.length?`${lowF.length} page đăng dưới 2 bài/tuần. Algorithm sẽ giảm organic distribution.`:`Tất cả page duy trì tần suất đủ để giữ organic distribution tốt.`},
+  ].map(i=>`<div class="ins-card ${i.cls}"><div class="ins-ico">${i.ico}</div><div><div class="ins-title">${i.t}</div><div class="ins-body">${i.b}</div></div></div>`).join('');
+
+  // Charts
+  rc(`${cat}-c-share`,{type:'doughnut',data:{labels:pages.map(p=>p.name),datasets:[{data:pages.map(p=>p.m.reach),backgroundColor:pages.map(p=>p.color),borderWidth:3,borderColor:'#FFFFFF',hoverOffset:8}]},options:{cutout:'60%',plugins:{legend:{position:'right',labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},padding:8,boxWidth:8}}}}});
+
+  rc(`${cat}-c-er-bar`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[{label:'ER%',data:pages.map(p=>+p.m.er.toFixed(2)),backgroundColor:pages.map(p=>p.color+'cc'),borderRadius:7,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:{...cfg,callback:v=>v+'%'},grid}}}});
+}
+
+function setSort(cat, key, btn) {
+  btn.closest('.sort-pills').querySelectorAll('.sp').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  CATS[cat].sort = key;
+  buildOverview(cat, sortedPages(cat));
+}
+
+// ─── REACH ───
+function buildReach(cat, pages) {
+  rc(`${cat}-c-reach-cmp`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[
+    {label:'Organic',data:pages.map(p=>p.m.orgR),backgroundColor:pages.map(p=>p.color+'bb'),stack:'r',borderRadius:{topLeft:6,topRight:6,bottomLeft:0,bottomRight:0}},
+    {label:'Paid',data:pages.map(p=>p.m.paidR),backgroundColor:'rgba(217,48,37,.35)',stack:'r'},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11}}}},scales:{x:{ticks:cfg,grid:{display:false},stacked:true},y:{ticks:{...cfg,callback:v=>fmt(v)},grid,stacked:true}}}});
+
+  rc(`${cat}-c-paid-dep`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[{label:'Paid %',data:pages.map(p=>+p.m.paidP.toFixed(1)),backgroundColor:pages.map(p=>p.m.paidP>70?'rgba(217,48,37,.6)':p.m.paidP>50?'rgba(180,83,9,.55)':p.color+'99'),borderRadius:7,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:{...cfg,callback:v=>v+'%'},grid,min:0,max:100}}}});
+
+  buildPills(`${cat}-reach-pills`, pages, name=>drawReachTrend(cat, name));
+  if (pages[0]) drawReachTrend(cat, pages[0].name);
+}
+
+function drawReachTrend(cat, name) {
+  const pg = CATS[cat].pages.find(p=>p.name===name); if(!pg?.data) return;
+  const rows = sortedRows(pg.data);
+  const labels = rows.map(dayLbl);
+  rc(`${cat}-c-reach-trend`,{type:'bar',data:{labels,datasets:[
+    {label:'Organic',data:rows.map(r=>+r['Reach from Organic posts']||0),backgroundColor:pg.color+'99',stack:'r'},
+    {label:'Paid',data:rows.map(r=>+r['Reach from Boosted posts']||0),backgroundColor:'rgba(217,48,37,.35)',stack:'r'},
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11}}}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false},stacked:true},y:{ticks:{...cfg,callback:v=>fmt(v)},grid,stacked:true}}}});
+}
+
+// ─── ER ───
+function buildER(cat, pages) {
+  const labels = pages[0] ? sortedRows(pages[0].data).map(dayLbl) : [];
+  rc(`${cat}-c-er-multi`,{type:'line',data:{labels,datasets:pages.map(p=>{
+    const rows=sortedRows(p.data);
+    return {label:p.name,data:rows.map(r=>{const re=+r['Reach']||0;const en=(+r['Reactions']||0)+(+r['Comments']||0)+(+r['Shares']||0)+(+r['Total clicks']||0);return re>0?+(en/re*100).toFixed(2):0;}),borderColor:p.color,backgroundColor:'transparent',tension:.35,pointRadius:1.5,borderWidth:2};
+  })},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},boxWidth:12}}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false}},y:{ticks:{...cfg,callback:v=>v+'%'},grid}}}});
+
+  const totR=pages.reduce((s,p)=>s+p.m.react,0);
+  const totC=pages.reduce((s,p)=>s+p.m.cmt,0);
+  const totS=pages.reduce((s,p)=>s+p.m.shares,0);
+  rc(`${cat}-c-eng-donut`,{type:'doughnut',data:{labels:['Reactions','Comments','Shares'],datasets:[{data:[totR,totC,totS],backgroundColor:['#FF6B00','#B45309','#FBBF24'],borderWidth:3,borderColor:'#FFFFFF',hoverOffset:6}]},options:{cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},padding:8,boxWidth:8}}}}});
+
+  buildPills(`${cat}-er-pills`, pages, name=>drawERDetail(cat, name));
+  if (pages[0]) drawERDetail(cat, pages[0].name);
+}
+
+function drawERDetail(cat, name) {
+  const pg = CATS[cat].pages.find(p=>p.name===name); if(!pg?.data) return;
+  const rows = sortedRows(pg.data);
+  const labels = rows.map(dayLbl);
+  const erT = rows.map(r=>{const re=+r['Reach']||0;const en=(+r['Reactions']||0)+(+r['Comments']||0)+(+r['Shares']||0)+(+r['Total clicks']||0);return re>0?+(en/re*100).toFixed(2):0;});
+  const erO = rows.map(r=>{const or=+r['Reach from Organic posts']||0;const en=(+r['Reactions']||0)+(+r['Comments']||0)+(+r['Shares']||0)+(+r['Total clicks']||0);return or>0?+(en/or*100).toFixed(2):0;});
+  rc(`${cat}-c-er-detail`,{type:'line',data:{labels,datasets:[{label:'ER%',data:erT,borderColor:pg.color,backgroundColor:pg.color+'18',fill:true,tension:.3,pointRadius:2,borderWidth:2},{label:'Org ER%',data:erO,borderColor:pg.color+'88',borderDash:[4,3],tension:.3,pointRadius:0,borderWidth:1.5,backgroundColor:'transparent'}]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},boxWidth:12}}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false}},y:{ticks:{...cfg,callback:v=>v+'%'},grid}}}});
+  rc(`${cat}-c-eng-detail`,{type:'bar',data:{labels,datasets:[{label:'Reactions',data:rows.map(r=>+r['Reactions']||0),backgroundColor:'#FF6B0099',stack:'e'},{label:'Comments',data:rows.map(r=>+r['Comments']||0),backgroundColor:'#B4530999',stack:'e'},{label:'Shares',data:rows.map(r=>+r['Shares']||0),backgroundColor:'#FBBF2499',stack:'e'}]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},boxWidth:10}}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false},stacked:true},y:{ticks:cfg,grid,stacked:true}}}});
+}
+
+// ─── VIDEO ───
+function buildVideo(cat, pages) {
+  rc(`${cat}-c-vid-cmp`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[{label:'3s Views',data:pages.map(p=>p.m.v3s),backgroundColor:pages.map(p=>p.color+'cc'),borderRadius:7,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:{...cfg,callback:v=>fmt(v)},grid}}}});
+  rc(`${cat}-c-vid-pct`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[{label:'% Video',data:pages.map(p=>+(p.m.vidP/Math.max(p.m.posts,1)*100).toFixed(1)),backgroundColor:pages.map(p=>p.m.vidP/Math.max(p.m.posts,1)>0.3?p.color+'cc':'rgba(0,0,0,.08)'),borderRadius:7,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:{...cfg,callback:v=>v+'%'},grid,max:100}}}});
+  buildPills(`${cat}-video-pills`, pages, name=>drawVideoTrend(cat, name));
+  if (pages[0]) drawVideoTrend(cat, pages[0].name);
+}
+
+function drawVideoTrend(cat, name) {
+  const pg = CATS[cat].pages.find(p=>p.name===name); if(!pg?.data) return;
+  const rows = sortedRows(pg.data);
+  rc(`${cat}-c-vid-trend`,{type:'bar',data:{labels:rows.map(dayLbl),datasets:[{label:'3s Views',data:rows.map(r=>+r['3-second video views']||0),backgroundColor:pg.color+'99',borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false}},y:{ticks:{...cfg,callback:v=>fmt(v)},grid}}}});
+}
+
+// ─── FREQUENCY ───
+function buildFreq(cat, pages) {
+  rc(`${cat}-c-freq-cmp`,{type:'bar',data:{labels:pages.map(p=>p.name),datasets:[{label:'Posts/tuần',data:pages.map(p=>p.m.ppw),backgroundColor:pages.map(p=>p.m.ppw>=3?p.color+'cc':p.m.ppw>=2?'rgba(180,83,9,.6)':'rgba(217,48,37,.5)'),borderRadius:7,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:cfg,grid}}}});
+
+  const allRows = pages.flatMap(p=>p.data||[]);
+  const dowCnt=new Array(7).fill(0), dowTot=new Array(7).fill(0);
+  allRows.forEach(r=>{const d=new Date(r['Publish time']||'');if(!isNaN(d)){const dw=d.getDay();dowCnt[dw]++;dowTot[dw]+=(+r['Reach']||0);}});
+  rc(`${cat}-c-dow`,{type:'bar',data:{labels:['CN','T2','T3','T4','T5','T6','T7'],datasets:[{label:'Số bài',data:[0,1,2,3,4,5,6].map(i=>dowCnt[i]),backgroundColor:CATS[cat].color+'88',borderRadius:5,yAxisID:'y'},{label:'Avg Reach',type:'line',data:[0,1,2,3,4,5,6].map(i=>dowCnt[i]>0?Math.round(dowTot[i]/dowCnt[i]):0),borderColor:CATS[cat].color,backgroundColor:'transparent',yAxisID:'y2',tension:.3,pointRadius:3,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},boxWidth:10}}},scales:{x:{ticks:cfg,grid:{display:false}},y:{ticks:cfg,grid,position:'left'},y2:{ticks:{...cfg,callback:v=>fmt(v)},grid:{display:false},position:'right'}}}});
+
+  buildPills(`${cat}-freq-pills`, pages, name=>drawFreqTrend(cat, name));
+  if (pages[0]) drawFreqTrend(cat, pages[0].name);
+}
+
+function drawFreqTrend(cat, name) {
+  const pg = CATS[cat].pages.find(p=>p.name===name); if(!pg?.data) return;
+  const rows = sortedRows(pg.data);
+  rc(`${cat}-c-freq-trend`,{type:'bar',data:{labels:rows.map(dayLbl),datasets:[{label:'Reach',data:rows.map(r=>+r['Reach']||0),backgroundColor:pg.color+'44',borderRadius:3,yAxisID:'y'},{label:'Posts',data:rows.map(()=>1),backgroundColor:pg.color+'cc',borderRadius:3,yAxisID:'y2',barThickness:4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:11},boxWidth:10}}},scales:{x:{ticks:{...cfg,maxTicksLimit:10,maxRotation:30},grid:{display:false}},y:{ticks:{...cfg,callback:v=>fmt(v)},grid,position:'left'},y2:{ticks:cfg,grid:{display:false},position:'right',max:3}}}});
+}
+
+// ─── REPORT ───
+// ── PER-PAGE INSIGHT ENGINE ──
+function pageInsights(p, allPages) {
+  const m = p.m;
+  const catAvgEr    = allPages.reduce((s,x)=>s+x.m.er,0)/allPages.length;
+  const catAvgReach = allPages.reduce((s,x)=>s+x.m.reach,0)/allPages.length;
+  const vidPct      = m.posts>0 ? m.vidP/m.posts : 0;
+  const paidPct     = m.reach>0 ? m.paidR/m.reach : 0;
+
+  // Sort posts by engagement to find top post
+  const sortedByEng = [...p.data].sort((a,b)=>{
+    const ea=(+a['Reactions']||0)+(+a['Comments']||0)+(+a['Shares']||0);
+    const eb=(+b['Reactions']||0)+(+b['Comments']||0)+(+b['Shares']||0);
+    return eb-ea;
+  });
+  const topPost = sortedByEng[0];
+  const topPostEng = topPost ? (+topPost['Reactions']||0)+(+topPost['Comments']||0)+(+topPost['Shares']||0) : 0;
+  const topPostDate = topPost ? new Date(topPost['Publish time']||'') : null;
+  const topPostDateStr = topPostDate&&!isNaN(topPostDate) ? topPostDate.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}) : '—';
+
+  // Avg engagement by post type
+  const byType = {};
+  p.data.forEach(r => {
+    const t = (r['Post type']||'Other').replace(/s$/,'');
+    const eng = (+r['Reactions']||0)+(+r['Comments']||0)+(+r['Shares']||0);
+    if (!byType[t]) byType[t] = { sum:0, cnt:0 };
+    byType[t].sum += eng; byType[t].cnt++;
+  });
+  const typeAvgs = Object.entries(byType).map(([t,v])=>({t, avg:v.cnt?v.sum/v.cnt:0, cnt:v.cnt}));
+  typeAvgs.sort((a,b)=>b.avg-a.avg);
+  const bestType = typeAvgs[0];
+
+  // Best DOW by reach
+  const dowR=new Array(7).fill(0), dowC=new Array(7).fill(0);
+  p.data.forEach(r=>{const d=new Date(r['Publish time']||'');if(!isNaN(d)){dowR[d.getDay()]+=(+r['Reach']||0);dowC[d.getDay()]++;}});
+  const dowAvg = dowR.map((s,i)=>dowC[i]>0?s/dowC[i]:0);
+  const bestDow = dowAvg.indexOf(Math.max(...dowAvg));
+  const dowNames = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+
+  // Comments/Reactions ratio
+  const cmtRatio = m.react>0 ? m.cmt/m.react : 0;
+
+  const insights=[], actions=[];
+
+  // ER
+  if (m.er>=3)
+    insights.push({c:'var(--green)', txt:`ER ${m.er.toFixed(2)}% — vượt benchmark 3%. Content đang resonates tốt, maintain format hiện tại.`});
+  else if (m.er>=catAvgEr)
+    insights.push({c:'var(--orange)', txt:`ER ${m.er.toFixed(2)}% — trên avg category (${catAvgEr.toFixed(2)}%). Tìm cách scale format đang hiệu quả.`});
+  else if (m.er>=1)
+    insights.push({c:'var(--amber)', txt:`ER ${m.er.toFixed(2)}% — dưới avg category (${catAvgEr.toFixed(2)}%). Cần review content mix.`});
+  else {
+    insights.push({c:'var(--red)', txt:`ER ${m.er.toFixed(2)}% — dưới benchmark 1%. Audience không tương tác với content hiện tại. Cần audit toàn bộ content strategy.`});
+    actions.push({p:'hi',a:'Audit content strategy',d:`ER dưới 1% — thử A/B format mới: interactive post (quiz, hỏi đáp). Bài engagement cao nhất kỳ này (${fmt(topPostEng)} eng, ngày ${topPostDateStr}) là điểm khởi đầu tốt để phân tích pattern.`});
+  }
+
+  // Reach vs category
+  if (m.reach>catAvgReach*1.3)
+    insights.push({c:'var(--green)', txt:`Reach ${fmt(m.reach)} — cao hơn avg category ${Math.round(m.reach/catAvgReach*100-100)}%. Distribution đang tốt.`});
+  else if (m.reach<catAvgReach*0.7) {
+    insights.push({c:'var(--red)', txt:`Reach ${fmt(m.reach)} — thấp hơn avg category ${Math.round(100-m.reach/catAvgReach*100)}%. Distribution yếu.`});
+    actions.push({p:'hi',a:'Tăng organic reach',d:`Reach dưới avg category. Đăng vào ${dowNames[bestDow]} (avg reach cao nhất page: ${fmt(Math.round(dowAvg[bestDow]))}), boost tương tác trong 60 phút đầu.`});
+  }
+
+  // Paid dependency
+  if (paidPct>0.6) {
+    insights.push({c:'var(--amber)', txt:`${Math.round(paidPct*100)}% reach từ paid boost — phụ thuộc quảng cáo cao, rủi ro khi cắt budget.`});
+    actions.push({p:'md',a:'Giảm paid dependency',d:`Paid chiếm ${Math.round(paidPct*100)}%. Tăng tần suất đăng lên ${Math.max(3,Math.round(m.ppw)+1)} bài/tuần và ưu tiên format ${bestType?bestType.t:'Video'} — avg engagement cao nhất page.`});
+  } else if (paidPct<0.1&&m.reach>catAvgReach)
+    insights.push({c:'var(--green)', txt:`${Math.round((1-paidPct)*100)}% reach organic — không phụ thuộc paid, đây là điểm mạnh.`});
+
+  // Post frequency
+  if (m.ppw<2) {
+    insights.push({c:'var(--red)', txt:`Tần suất ${m.ppw} bài/tuần — quá thấp. Algorithm giảm phân phối khi fanpage ít active.`});
+    actions.push({p:'hi',a:'Tăng tần suất đăng bài',d:`Cần tối thiểu 3 bài/tuần để duy trì organic reach. Lên content calendar batch 2 tuần/lần để giảm áp lực hàng ngày.`});
+  } else if (m.ppw>=5)
+    insights.push({c:'var(--green)', txt:`Tần suất ${m.ppw} bài/tuần — tốt. Đảm bảo chất lượng không giảm khi đăng nhiều.`});
+
+  // Video
+  if (vidPct<0.15&&m.posts>=5) {
+    insights.push({c:'var(--amber)', txt:`Chỉ ${Math.round(vidPct*100)}% bài là video. Video/Reels thường có organic reach cao hơn 2–3× ảnh tĩnh.`});
+    actions.push({p:'md',a:'Scale video content',d:`Target 30–40% video ngắn 15–30s. Hook mạnh trong 3s đầu, thêm caption vì 80% xem không có tiếng.`});
+  } else if (vidPct>=0.4&&m.v3s>0)
+    insights.push({c:'var(--green)', txt:`Video chiếm ${Math.round(vidPct*100)}% content với ${fmt(m.v3s)} 3-second views — video strategy đang hiệu quả.`});
+
+  // Best content type
+  if (bestType&&bestType.cnt>=2) {
+    insights.push({c:'var(--blue)', txt:`${bestType.t} có avg engagement cao nhất: ${fmt(Math.round(bestType.avg))} eng/bài (${bestType.cnt} bài). Đây là format hiệu quả nhất kỳ này.`});
+    actions.push({p:'lo',a:`Scale format ${bestType.t}`,d:`${bestType.t} avg ${fmt(Math.round(bestType.avg))} eng/bài — cao nhất. Tăng tỉ lệ ${bestType.t} lên 40–50% content mix. Phân tích top 3 bài ${bestType.t} để tìm pattern (topic, hook, CTA).`});
+  }
+
+  // Comment signal
+  if (cmtRatio>0.3) {
+    insights.push({c:'var(--green)', txt:`Comment/Reaction ratio ${(cmtRatio*100).toFixed(0)}% — cộng đồng đang discussion nhiều. Tận dụng để push organic reach.`});
+    actions.push({p:'lo',a:'Tận dụng comment engagement',d:`Reply tất cả comment trong 1h đầu để push bài. Dùng bài có comment cao làm template cho tháng sau.`});
+  }
+
+  // Best DOW
+  if (dowC[bestDow]>0)
+    actions.push({p:'lo',a:`Đăng bài vào ${dowNames[bestDow]}`,d:`${dowNames[bestDow]} có avg reach ${fmt(Math.round(dowAvg[bestDow]))} — cao nhất trong tuần. Ưu tiên đăng content quan trọng vào ngày này, khung giờ 7–9h sáng hoặc 8–10h tối.`});
+
+  return {insights, actions};
+}
+
+function buildReport(cat, pages) {
+  const tot={reach:0,eng:0,v3s:0,posts:0};
+  pages.forEach(p=>{tot.reach+=p.m.reach;tot.eng+=p.m.eng;tot.v3s+=p.m.v3s;tot.posts+=p.m.posts;});
+  const avgEr = pages.reduce((s,p)=>s+p.m.er,0)/pages.length;
+
+  document.getElementById(`${cat}-rep-period`).textContent = 'Kỳ báo cáo: '+periodStr(pages.map(p=>({data:p.data})))+' · '+pages.length+' fanpages · '+tot.posts+' bài';
+
+  document.getElementById(`${cat}-rep-kpis`).innerHTML = [
+    {l:'Total Reach',v:fmt(tot.reach)},
+    {l:'Total Engagement',v:fmt(tot.eng)},
+    {l:'Avg ER%',v:avgEr.toFixed(2)+'%'},
+    {l:'Video Views',v:fmt(tot.v3s)},
+  ].map(k=>`<div class="rep-kpi"><div class="rep-kpi-val">${k.v}</div><div class="rep-kpi-label">${k.l}</div></div>`).join('');
+
+  const maxR=Math.max(...pages.map(p=>p.m.reach),1);
+  document.getElementById(`${cat}-rep-pages`).innerHTML = pages.map(p=>`
+    <div class="pp-card">
+      <div class="pp-name"><span class="pg-dot" style="background:${p.color}"></span>${p.name}</div>
+      <div class="pp-er" style="color:${hc(p.m.er)}">${p.m.er.toFixed(2)}%</div>
+      <div class="pp-row"><span>Reach</span><span>${fmt(p.m.reach)}</span></div>
+      <div class="pp-row"><span>Engagement</span><span>${fmt(p.m.eng)}</span></div>
+      <div class="pp-row"><span>Video Views</span><span>${p.m.v3s>0?fmt(p.m.v3s):'—'}</span></div>
+      <div class="pp-row"><span>Posts/tuần</span><span>${p.m.ppw}</span></div>
+      <div class="pp-bar-bg"><div class="pp-bar-fill" style="width:${Math.round(p.m.reach/maxR*100)}%;background:${p.color}"></div></div>
+    </div>
+  `).join('');
+
+  rc(`${cat}-rep-er`,{type:'doughnut',data:{labels:pages.map(p=>p.name),datasets:[{data:pages.map(p=>+p.m.er.toFixed(2)),backgroundColor:pages.map(p=>p.color),borderWidth:3,borderColor:'#fff'}]},options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{color:'#6B6560',font:{family:'Plus Jakarta Sans',size:10},padding:6,boxWidth:8}}}}});
+  const byR=[...pages].sort((a,b)=>b.m.reach-a.m.reach);
+  rc(`${cat}-rep-reach`,{type:'bar',data:{labels:byR.map(p=>p.name),datasets:[{data:byR.map(p=>p.m.reach),backgroundColor:byR.map(p=>p.color+'cc'),borderRadius:6,borderSkipped:false}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{...cfg,callback:v=>fmt(v)},grid},y:{ticks:{...cfg,font:{size:10}},grid:{display:false}}}}});
+
+  // Portfolio-level actions
+  const best=pages[0], worst=pages[pages.length-1];
+  const lowF=pages.filter(p=>p.m.ppw<2), lowV=pages.filter(p=>p.m.vidP/Math.max(p.m.posts,1)<0.15);
+  const actions=[];
+  if(worst.m.er<1) actions.push({p:'p1',t:`Khẩn cấp: ${worst.name} — ER ${worst.m.er.toFixed(2)}%`,d:`Dưới benchmark 1%. Audit content mix ngay. Tham khảo format của ${best.name} (ER ${best.m.er.toFixed(2)}%).`});
+  if(lowF.length) actions.push({p:'p1',t:`${lowF.map(p=>p.name).join(', ')} — đăng bài dưới 2/tuần`,d:'Tần suất thấp khiến algorithm giảm organic distribution. Cần content calendar tối thiểu 3 posts/tuần.'});
+  if(lowV.length) actions.push({p:'p2',t:`Tăng video cho ${lowV.map(p=>p.name).slice(0,2).join(', ')}`,d:'Reels/Video có organic reach cao hơn 2–3× ảnh tĩnh. Target: 30–40% content là video ngắn 15–30s.'});
+  actions.push({p:'p2',t:`Benchmark content từ ${best.name} (ER ${best.m.er.toFixed(2)}%)`,d:`Phân tích top 5 bài hiệu quả nhất, áp dụng format và topic cho các page còn lại.`});
+  actions.push({p:'p3',t:'Tối ưu lịch đăng theo DOW',d:'Tab Frequency → DOW chart cho thấy ngày có avg reach cao nhất. Ưu tiên đăng content quan trọng vào ngày đó.'});
+  document.getElementById(`${cat}-rep-actions`).innerHTML = actions.map(a=>`<div class="action-item ${a.p}"><span class="ap ${a.p}">${a.p==='p1'?'Khẩn cấp':a.p==='p2'?'Quan trọng':'Tối ưu'}</span><div><div class="a-title">${a.t}</div><div class="a-desc">${a.d}</div></div></div>`).join('');
+
+  // ── Per-page analysis ──
+  const analysisEl = document.getElementById(`${cat}-rep-analysis`);
+  if (!analysisEl) return;
+  analysisEl.innerHTML = pages.map(p => {
+    const {insights, actions:pAct} = pageInsights(p, pages);
+    const [hlabel,hcolor,hbg] = p.m.er>=3 ? ['Tốt','var(--green)','var(--green-lt)']
+      : p.m.er>=1 ? ['Ổn','var(--orange)','var(--orange-light)']
+      : ['Cần cải thiện','var(--red)','var(--red-lt)'];
+    return `
+    <div class="pa-card">
+      <div class="pa-header">
+        <div class="pa-color-bar" style="background:${p.color}"></div>
+        <div class="pa-title-block">
+          <div class="pa-page-name">${p.name}</div>
+          <div class="pa-kpi-row">
+            <div class="pa-kpi"><div class="pa-kpi-val" style="color:${hc(p.m.er)}">${p.m.er.toFixed(2)}%</div><div class="pa-kpi-label">ER%</div></div>
+            <div class="pa-kpi"><div class="pa-kpi-val">${fmt(p.m.reach)}</div><div class="pa-kpi-label">Reach</div></div>
+            <div class="pa-kpi"><div class="pa-kpi-val">${fmt(p.m.eng)}</div><div class="pa-kpi-label">Engagement</div></div>
+            <div class="pa-kpi"><div class="pa-kpi-val">${p.m.v3s>0?fmt(p.m.v3s):'—'}</div><div class="pa-kpi-label">3s Views</div></div>
+            <div class="pa-kpi"><div class="pa-kpi-val">${p.m.ppw}/wk</div><div class="pa-kpi-label">Freq</div></div>
+          </div>
+        </div>
+        <div class="pa-badge" style="color:${hcolor};background:${hbg};border:1px solid ${hcolor}55">${hlabel}</div>
+      </div>
+      <div class="pa-body">
+        <div>
+          <div class="pa-sec-label">💡 Insights kỳ này</div>
+          <div class="pa-list">
+            ${insights.length
+              ? insights.map(i=>`<div class="pa-item"><div class="pa-dot" style="background:${i.c}"></div><div>${i.txt}</div></div>`).join('')
+              : '<div class="pa-item" style="color:var(--text3);font-size:12px">Không đủ data để phân tích.</div>'}
+          </div>
+        </div>
+        <div>
+          <div class="pa-sec-label">🎯 Next actions</div>
+          <div class="pa-list">
+            ${pAct.length
+              ? pAct.map(a=>`<div class="pa-item"><span class="pa-prio ${a.p}">${a.p==='hi'?'Cao':a.p==='md'?'TB':'Thấp'}</span><div><strong style="color:var(--text);font-size:12px;display:block;margin-bottom:2px">${a.a}</strong><span style="font-size:11px;color:var(--text2)">${a.d}</span></div></div>`).join('')
+              : '<div class="pa-item" style="color:var(--text3);font-size:12px">Tiếp tục maintain hiệu suất hiện tại.</div>'}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── PILLS ───
+function buildPills(containerId, pages, callback) {
+  const el = document.getElementById(containerId); if(!el) return;
+  window['_cb_'+containerId] = callback;
+  el.innerHTML = pages.map((p,i)=>`
+    <button class="page-pill" id="${containerId}-${i}"
+      style="border-color:${p.color};color:${p.color};${i===0?`background:${p.color};color:#fff;`:''}"
+      onclick="activatePill('${containerId}',${i},${pages.length},'${p.name}')">
+      ${p.name}
+    </button>
+  `).join('');
+}
+
+function activatePill(cid, idx, total, name) {
+  const pages = [...CATS.casual.pages, ...CATS.bai.pages].filter(p=>p.data);
+  for(let i=0;i<total;i++){
+    const el=document.getElementById(cid+'-'+i); if(!el) continue;
+    // find page by position in current cat
+    const catPages = cid.startsWith('casual') ? CATS.casual.pages.filter(p=>p.data) : CATS.bai.pages.filter(p=>p.data);
+    const pg = catPages[i];
+    if(!pg) continue;
+    if(i===idx){ el.style.background=pg.color; el.style.color='#fff'; }
+    else { el.style.background='transparent'; el.style.color=pg.color; }
+  }
+  if(window['_cb_'+cid]) window['_cb_'+cid](name);
+}
+
+// ─── TAB SWITCHING ───
+function switchCat(cat, btn) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cat-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('cat-'+cat).classList.add('active');
+}
+
+function switchSub(sub, btn) {
+  activeSub = sub;
+  document.querySelectorAll('.subtab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['casual','bai'].forEach(cat=>{
+    document.querySelectorAll(`#cat-${cat} .sub-pane`).forEach(p=>p.classList.remove('active'));
+    const target = document.getElementById(`${cat}-${sub}`);
+    if(target) target.classList.add('active');
+  });
+}
+
+// ─── INIT ───
+const PRELOAD_DATA = {"casual":[{"name":"iCá ZingPlay","rows":[{"Date":"Lifetime","Post type":"Videos","Reach":"12631","Reach from Boosted posts":"0","3-second video views":"2774","Views":"16996","Publish time":"2026-04-30 02:30:00","Comments":"75","Reactions, Comments and Shares":"357","Reach from Organic posts":"12631","Shares":"4","Reactions":"278","Total clicks":"298"},{"Date":"Lifetime","Post type":"Photos","Reach":"9368","Reach from Boosted posts":"0","3-second video views":"0","Views":"21280","Publish time":"2026-04-28 01:00:00","Comments":"178","Reactions, Comments and Shares":"1516","Reach from Organic posts":"9368","Shares":"23","Reactions":"1315","Total clicks":"356"},{"Date":"Lifetime","Post type":"Photos","Reach":"21102","Reach from Boosted posts":"0","3-second video views":"0","Views":"38751","Publish time":"2026-04-27 20:00:00","Comments":"736","Reactions, Comments and Shares":"3983","Reach from Organic posts":"21102","Shares":"73","Reactions":"3174","Total clicks":"1344"},{"Date":"Lifetime","Post type":"Videos","Reach":"13009","Reach from Boosted posts":"0","3-second video views":"2915","Views":"13477","Publish time":"2026-04-26 20:00:00","Comments":"50","Reactions, Comments and Shares":"369","Reach from Organic posts":"13009","Shares":"3","Reactions":"316","Total clicks":"264"},{"Date":"Lifetime","Post type":"Text","Reach":"10711","Reach from Boosted posts":"0","3-second video views":"0","Views":"20141","Publish time":"2026-04-26 00:49:00","Comments":"103","Reactions, Comments and Shares":"381","Reach from Organic posts":"10711","Shares":"3","Reactions":"275","Total clicks":"830"},{"Date":"Lifetime","Post type":"Photos","Reach":"35836","Reach from Boosted posts":"0","3-second video views":"0","Views":"57192","Publish time":"2026-04-24 19:00:00","Comments":"1525","Reactions, Comments and Shares":"4153","Reach from Organic posts":"35836","Shares":"254","Reactions":"2374","Total clicks":"2602"},{"Date":"Lifetime","Post type":"Photos","Reach":"7884","Reach from Boosted posts":"0","3-second video views":"0","Views":"14249","Publish time":"2026-04-23 05:00:00","Comments":"66","Reactions, Comments and Shares":"217","Reach from Organic posts":"7884","Shares":"5","Reactions":"146","Total clicks":"361"},{"Date":"Lifetime","Post type":"Photos","Reach":"13906","Reach from Boosted posts":"0","3-second video views":"0","Views":"23979","Publish time":"2026-04-21 05:30:00","Comments":"330","Reactions, Comments and Shares":"757","Reach from Organic posts":"13906","Shares":"83","Reactions":"344","Total clicks":"948"},{"Date":"Lifetime","Post type":"Photos","Reach":"7677","Reach from Boosted posts":"0","3-second video views":"0","Views":"13269","Publish time":"2026-04-20 05:30:00","Comments":"74","Reactions, Comments and Shares":"219","Reach from Organic posts":"7677","Shares":"2","Reactions":"143","Total clicks":"369"},{"Date":"Lifetime","Post type":"Photos","Reach":"6213","Reach from Boosted posts":"0","3-second video views":"0","Views":"10745","Publish time":"2026-04-20 01:28:00","Comments":"51","Reactions, Comments and Shares":"141","Reach from Organic posts":"6213","Shares":"2","Reactions":"88","Total clicks":"279"},{"Date":"Lifetime","Post type":"Videos","Reach":"8528","Reach from Boosted posts":"0","3-second video views":"1913","Views":"10254","Publish time":"2026-04-17 00:00:00","Comments":"40","Reactions, Comments and Shares":"125","Reach from Organic posts":"8528","Shares":"1","Reactions":"84","Total clicks":"156"},{"Date":"Lifetime","Post type":"Videos","Reach":"22280","Reach from Boosted posts":"0","3-second video views":"8323","Views":"28862","Publish time":"2026-04-15 20:52:00","Comments":"229","Reactions, Comments and Shares":"832","Reach from Organic posts":"22280","Shares":"37","Reactions":"566","Total clicks":"353"},{"Date":"Lifetime","Post type":"Photos","Reach":"10052","Reach from Boosted posts":"0","3-second video views":"0","Views":"18037","Publish time":"2026-04-15 04:00:00","Comments":"157","Reactions, Comments and Shares":"273","Reach from Organic posts":"10052","Shares":"3","Reactions":"113","Total clicks":"643"},{"Date":"Lifetime","Post type":"Photos","Reach":"4946","Reach from Boosted posts":"0","3-second video views":"0","Views":"9890","Publish time":"2026-04-13 06:30:00","Comments":"80","Reactions, Comments and Shares":"158","Reach from Organic posts":"4946","Shares":"2","Reactions":"76","Total clicks":"325"},{"Date":"Lifetime","Post type":"Photos","Reach":"14626","Reach from Boosted posts":"0","3-second video views":"0","Views":"22077","Publish time":"2026-04-13 03:08:00","Comments":"262","Reactions, Comments and Shares":"657","Reach from Organic posts":"14626","Shares":"12","Reactions":"383","Total clicks":"684"},{"Date":"Lifetime","Post type":"Photos","Reach":"20982","Reach from Boosted posts":"0","3-second video views":"0","Views":"34260","Publish time":"2026-04-10 05:00:00","Comments":"709","Reactions, Comments and Shares":"1052","Reach from Organic posts":"20982","Shares":"24","Reactions":"319","Total clicks":"1855"},{"Date":"Lifetime","Post type":"Text","Reach":"12617","Reach from Boosted posts":"0","3-second video views":"0","Views":"24816","Publish time":"2026-04-09 05:30:00","Comments":"164","Reactions, Comments and Shares":"251","Reach from Organic posts":"12617","Shares":"3","Reactions":"84","Total clicks":"1614"},{"Date":"Lifetime","Post type":"Videos","Reach":"3555","Reach from Boosted posts":"0","3-second video views":"1409","Views":"5207","Publish time":"2026-04-09 04:00:00","Comments":"42","Reactions, Comments and Shares":"103","Reach from Organic posts":"3555","Shares":"2","Reactions":"59","Total clicks":"260"},{"Date":"Lifetime","Post type":"Photos","Reach":"7563","Reach from Boosted posts":"0","3-second video views":"0","Views":"14024","Publish time":"2026-04-09 00:00:00","Comments":"82","Reactions, Comments and Shares":"156","Reach from Organic posts":"7563","Shares":"3","Reactions":"71","Total clicks":"452"},{"Date":"Lifetime","Post type":"Photos","Reach":"21","Reach from Boosted posts":"0","3-second video views":"0","Views":"33","Publish time":"2026-04-08 01:50:00","Comments":"37","Reactions, Comments and Shares":"104","Reach from Organic posts":"21","Shares":"0","Reactions":"67","Total clicks":"9"},{"Date":"Lifetime","Post type":"Photos","Reach":"31091","Reach from Boosted posts":"0","3-second video views":"0","Views":"47103","Publish time":"2026-04-06 04:30:00","Comments":"714","Reactions, Comments and Shares":"1075","Reach from Organic posts":"31091","Shares":"13","Reactions":"348","Total clicks":"1474"},{"Date":"Lifetime","Post type":"Photos","Reach":"7029","Reach from Boosted posts":"0","3-second video views":"0","Views":"8645","Publish time":"2026-04-03 03:44:00","Comments":"55","Reactions, Comments and Shares":"125","Reach from Organic posts":"7029","Shares":"1","Reactions":"69","Total clicks":"295"},{"Date":"Lifetime","Post type":"Photos","Reach":"7132","Reach from Boosted posts":"0","3-second video views":"0","Views":"11709","Publish time":"2026-03-31 04:01:00","Comments":"84","Reactions, Comments and Shares":"152","Reach from Organic posts":"7132","Shares":"2","Reactions":"66","Total clicks":"359"},{"Date":"Lifetime","Post type":"Videos","Reach":"8415","Reach from Boosted posts":"0","3-second video views":"2036","Views":"10718","Publish time":"2026-03-27 02:39:00","Comments":"64","Reactions, Comments and Shares":"147","Reach from Organic posts":"8415","Shares":"3","Reactions":"80","Total clicks":"253"},{"Date":"Lifetime","Post type":"Photos","Reach":"9715","Reach from Boosted posts":"0","3-second video views":"0","Views":"16799","Publish time":"2026-03-25 03:42:00","Comments":"94","Reactions, Comments and Shares":"159","Reach from Organic posts":"9715","Shares":"2","Reactions":"63","Total clicks":"413"},{"Date":"Lifetime","Post type":"Photos","Reach":"23697","Reach from Boosted posts":"0","3-second video views":"0","Views":"37875","Publish time":"2026-03-24 02:38:00","Comments":"640","Reactions, Comments and Shares":"997","Reach from Organic posts":"23697","Shares":"26","Reactions":"331","Total clicks":"1687"},{"Date":"Lifetime","Post type":"Photos","Reach":"5788","Reach from Boosted posts":"0","3-second video views":"0","Views":"10756","Publish time":"2026-03-23 03:16:00","Comments":"85","Reactions, Comments and Shares":"143","Reach from Organic posts":"5788","Shares":"1","Reactions":"57","Total clicks":"200"},{"Date":"Lifetime","Post type":"Videos","Reach":"9586","Reach from Boosted posts":"0","3-second video views":"2307","Views":"11609","Publish time":"2026-03-20 02:28:00","Comments":"43","Reactions, Comments and Shares":"113","Reach from Organic posts":"9586","Shares":"2","Reactions":"68","Total clicks":"98"},{"Date":"Lifetime","Post type":"Photos","Reach":"6663","Reach from Boosted posts":"0","3-second video views":"0","Views":"12181","Publish time":"2026-03-19 04:30:00","Comments":"216","Reactions, Comments and Shares":"282","Reach from Organic posts":"6663","Shares":"3","Reactions":"63","Total clicks":"245"},{"Date":"Lifetime","Post type":"Photos","Reach":"18262","Reach from Boosted posts":"0","3-second video views":"0","Views":"29477","Publish time":"2026-03-18 03:29:00","Comments":"356","Reactions, Comments and Shares":"816","Reach from Organic posts":"18262","Shares":"27","Reactions":"433","Total clicks":"990"},{"Date":"Lifetime","Post type":"Videos","Reach":"8917","Reach from Boosted posts":"0","3-second video views":"1861","Views":"10637","Publish time":"2026-03-17 07:42:00","Comments":"34","Reactions, Comments and Shares":"106","Reach from Organic posts":"8917","Shares":"1","Reactions":"71","Total clicks":"125"},{"Date":"Lifetime","Post type":"Photos","Reach":"3391","Reach from Boosted posts":"0","3-second video views":"0","Views":"6747","Publish time":"2026-03-14 20:00:00","Comments":"96","Reactions, Comments and Shares":"142","Reach from Organic posts":"3391","Shares":"0","Reactions":"46","Total clicks":"170"},{"Date":"Lifetime","Post type":"Photos","Reach":"9493","Reach from Boosted posts":"0","3-second video views":"0","Views":"15992","Publish time":"2026-03-13 19:30:00","Comments":"170","Reactions, Comments and Shares":"319","Reach from Organic posts":"9493","Shares":"10","Reactions":"139","Total clicks":"271"},{"Date":"Lifetime","Post type":"Photos","Reach":"3515","Reach from Boosted posts":"0","3-second video views":"0","Views":"6475","Publish time":"2026-03-13 02:37:00","Comments":"30","Reactions, Comments and Shares":"76","Reach from Organic posts":"3515","Shares":"1","Reactions":"45","Total clicks":"75"},{"Date":"Lifetime","Post type":"Photos","Reach":"76975","Reach from Boosted posts":"0","3-second video views":"0","Views":"108761","Publish time":"2026-03-10 21:00:00","Comments":"1458","Reactions, Comments and Shares":"2410","Reach from Organic posts":"76975","Shares":"33","Reactions":"919","Total clicks":"2813"},{"Date":"Lifetime","Post type":"Photos","Reach":"5789","Reach from Boosted posts":"0","3-second video views":"0","Views":"11116","Publish time":"2026-03-09 04:30:00","Comments":"64","Reactions, Comments and Shares":"131","Reach from Organic posts":"5789","Shares":"1","Reactions":"66","Total clicks":"225"},{"Date":"Lifetime","Post type":"Photos","Reach":"4744","Reach from Boosted posts":"0","3-second video views":"0","Views":"9278","Publish time":"2026-03-06 19:00:00","Comments":"96","Reactions, Comments and Shares":"156","Reach from Organic posts":"4744","Shares":"1","Reactions":"59","Total clicks":"170"},{"Date":"Lifetime","Post type":"Photos","Reach":"4969","Reach from Boosted posts":"0","3-second video views":"0","Views":"9853","Publish time":"2026-03-06 02:02:00","Comments":"52","Reactions, Comments and Shares":"99","Reach from Organic posts":"4969","Shares":"1","Reactions":"46","Total clicks":"161"},{"Date":"Lifetime","Post type":"Photos","Reach":"5224","Reach from Boosted posts":"0","3-second video views":"0","Views":"9911","Publish time":"2026-03-04 21:30:00","Comments":"47","Reactions, Comments and Shares":"102","Reach from Organic posts":"5224","Shares":"1","Reactions":"54","Total clicks":"156"},{"Date":"Lifetime","Post type":"Photos","Reach":"18057","Reach from Boosted posts":"0","3-second video views":"0","Views":"31464","Publish time":"2026-03-03 23:36:00","Comments":"834","Reactions, Comments and Shares":"1306","Reach from Organic posts":"18057","Shares":"78","Reactions":"394","Total clicks":"1885"},{"Date":"Lifetime","Post type":"Photos","Reach":"30","Reach from Boosted posts":"0","3-second video views":"0","Views":"50","Publish time":"2026-03-03 20:56:00","Comments":"34","Reactions, Comments and Shares":"84","Reach from Organic posts":"30","Shares":"0","Reactions":"50","Total clicks":"2"},{"Date":"Lifetime","Post type":"Photos","Reach":"3428","Reach from Boosted posts":"0","3-second video views":"0","Views":"6737","Publish time":"2026-03-03 01:51:00","Comments":"26","Reactions, Comments and Shares":"52","Reach from Organic posts":"3428","Shares":"0","Reactions":"26","Total clicks":"217"},{"Date":"Lifetime","Post type":"Photos","Reach":"5946","Reach from Boosted posts":"0","3-second video views":"0","Views":"11650","Publish time":"2026-02-27 04:30:00","Comments":"77","Reactions, Comments and Shares":"139","Reach from Organic posts":"5946","Shares":"2","Reactions":"60","Total clicks":"251"},{"Date":"Lifetime","Post type":"Videos","Reach":"9658","Reach from Boosted posts":"0","3-second video views":"2084","Views":"12172","Publish time":"2026-02-23 18:29:00","Comments":"50","Reactions, Comments and Shares":"119","Reach from Organic posts":"9658","Shares":"2","Reactions":"67","Total clicks":"125"},{"Date":"Lifetime","Post type":"Videos","Reach":"12227","Reach from Boosted posts":"0","3-second video views":"3151","Views":"15686","Publish time":"2026-02-23 04:16:00","Comments":"51","Reactions, Comments and Shares":"142","Reach from Organic posts":"12227","Shares":"3","Reactions":"88","Total clicks":"258"},{"Date":"Lifetime","Post type":"Photos","Reach":"6957","Reach from Boosted posts":"0","3-second video views":"0","Views":"13379","Publish time":"2026-02-20 03:00:00","Comments":"70","Reactions, Comments and Shares":"131","Reach from Organic posts":"6957","Shares":"1","Reactions":"60","Total clicks":"262"},{"Date":"Lifetime","Post type":"Photos","Reach":"11568","Reach from Boosted posts":"0","3-second video views":"0","Views":"20610","Publish time":"2026-02-18 07:30:00","Comments":"186","Reactions, Comments and Shares":"330","Reach from Organic posts":"11568","Shares":"23","Reactions":"121","Total clicks":"258"},{"Date":"Lifetime","Post type":"Photos","Reach":"43392","Reach from Boosted posts":"0","3-second video views":"0","Views":"67842","Publish time":"2026-02-16 23:00:00","Comments":"1918","Reactions, Comments and Shares":"2663","Reach from Organic posts":"43392","Shares":"44","Reactions":"701","Total clicks":"3570"},{"Date":"Lifetime","Post type":"Text","Reach":"9053","Reach from Boosted posts":"0","3-second video views":"0","Views":"16542","Publish time":"2026-02-16 09:05:00","Comments":"59","Reactions, Comments and Shares":"130","Reach from Organic posts":"9053","Shares":"2","Reactions":"69","Total clicks":"343"},{"Date":"Lifetime","Post type":"Photos","Reach":"37942","Reach from Boosted posts":"0","3-second video views":"0","Views":"70381","Publish time":"2026-02-15 19:30:00","Comments":"1722","Reactions, Comments and Shares":"3026","Reach from Organic posts":"37942","Shares":"253","Reactions":"1051","Total clicks":"5937"},{"Date":"Lifetime","Post type":"Videos","Reach":"10675","Reach from Boosted posts":"0","3-second video views":"2378","Views":"13726","Publish time":"2026-02-14 19:00:00","Comments":"30","Reactions, Comments and Shares":"83","Reach from Organic posts":"10675","Shares":"1","Reactions":"52","Total clicks":"95"},{"Date":"Lifetime","Post type":"Photos","Reach":"6038","Reach from Boosted posts":"0","3-second video views":"0","Views":"11010","Publish time":"2026-02-14 18:30:00","Comments":"64","Reactions, Comments and Shares":"121","Reach from Organic posts":"6038","Shares":"3","Reactions":"54","Total clicks":"137"},{"Date":"Lifetime","Post type":"Videos","Reach":"14408","Reach from Boosted posts":"0","3-second video views":"3556","Views":"18717","Publish time":"2026-02-14 01:30:00","Comments":"21","Reactions, Comments and Shares":"92","Reach from Organic posts":"14408","Shares":"2","Reactions":"69","Total clicks":"223"},{"Date":"Lifetime","Post type":"Videos","Reach":"6560","Reach from Boosted posts":"0","3-second video views":"1647","Views":"8147","Publish time":"2026-02-13 00:00:00","Comments":"40","Reactions, Comments and Shares":"107","Reach from Organic posts":"6560","Shares":"2","Reactions":"65","Total clicks":"94"},{"Date":"Lifetime","Post type":"Photos","Reach":"5763","Reach from Boosted posts":"0","3-second video views":"0","Views":"10445","Publish time":"2026-02-12 20:00:00","Comments":"60","Reactions, Comments and Shares":"108","Reach from Organic posts":"5763","Shares":"1","Reactions":"47","Total clicks":"293"},{"Date":"Lifetime","Post type":"Photos","Reach":"14265","Reach from Boosted posts":"0","3-second video views":"0","Views":"23576","Publish time":"2026-02-10 18:30:00","Comments":"746","Reactions, Comments and Shares":"1346","Reach from Organic posts":"14265","Shares":"13","Reactions":"587","Total clicks":"1201"},{"Date":"Lifetime","Post type":"Photos","Reach":"4816","Reach from Boosted posts":"0","3-second video views":"0","Views":"8787","Publish time":"2026-02-10 06:35:00","Comments":"22","Reactions, Comments and Shares":"69","Reach from Organic posts":"4816","Shares":"1","Reactions":"46","Total clicks":"111"},{"Date":"Lifetime","Post type":"Photos","Reach":"9542","Reach from Boosted posts":"0","3-second video views":"0","Views":"16680","Publish time":"2026-02-09 19:25:00","Comments":"225","Reactions, Comments and Shares":"358","Reach from Organic posts":"9542","Shares":"8","Reactions":"125","Total clicks":"405"},{"Date":"Lifetime","Post type":"Photos","Reach":"4684","Reach from Boosted posts":"0","3-second video views":"0","Views":"8105","Publish time":"2026-02-09 01:05:00","Comments":"38","Reactions, Comments and Shares":"74","Reach from Organic posts":"4684","Shares":"1","Reactions":"35","Total clicks":"175"},{"Date":"Lifetime","Post type":"Videos","Reach":"19307","Reach from Boosted posts":"0","3-second video views":"3236","Views":"22056","Publish time":"2026-02-04 04:00:00","Comments":"66","Reactions, Comments and Shares":"193","Reach from Organic posts":"19307","Shares":"2","Reactions":"125","Total clicks":"274"},{"Date":"Lifetime","Post type":"Photos","Reach":"7721","Reach from Boosted posts":"0","3-second video views":"0","Views":"14280","Publish time":"2026-02-01 23:30:00","Comments":"69","Reactions, Comments and Shares":"143","Reach from Organic posts":"7721","Shares":"3","Reactions":"71","Total clicks":"221"},{"Date":"Lifetime","Post type":"Photos","Reach":"18971","Reach from Boosted posts":"0","3-second video views":"0","Views":"31628","Publish time":"2026-01-31 19:09:00","Comments":"344","Reactions, Comments and Shares":"778","Reach from Organic posts":"18971","Shares":"22","Reactions":"412","Total clicks":"1519"},{"Date":"Lifetime","Post type":"Photos","Reach":"5480","Reach from Boosted posts":"0","3-second video views":"0","Views":"10148","Publish time":"2026-01-28 18:20:00","Comments":"62","Reactions, Comments and Shares":"108","Reach from Organic posts":"5480","Shares":"1","Reactions":"45","Total clicks":"114"},{"Date":"Lifetime","Post type":"Photos","Reach":"5540","Reach from Boosted posts":"0","3-second video views":"0","Views":"9877","Publish time":"2026-01-28 02:14:00","Comments":"25","Reactions, Comments and Shares":"58","Reach from Organic posts":"5540","Shares":"0","Reactions":"33","Total clicks":"96"},{"Date":"Lifetime","Post type":"Photos","Reach":"19474","Reach from Boosted posts":"0","3-second video views":"0","Views":"34111","Publish time":"2026-01-01 23:00:00","Comments":"713","Reactions, Comments and Shares":"1256","Reach from Organic posts":"19474","Shares":"132","Reactions":"411","Total clicks":"1413"},{"Date":"Lifetime","Post type":"Photos","Reach":"23","Reach from Boosted posts":"0","3-second video views":"0","Views":"37","Publish time":"2026-01-03 00:37:00","Comments":"48","Reactions, Comments and Shares":"117","Reach from Organic posts":"23","Shares":"1","Reactions":"68","Total clicks":"1"},{"Date":"Lifetime","Post type":"Photos","Reach":"5998","Reach from Boosted posts":"0","3-second video views":"0","Views":"12171","Publish time":"2026-01-05 00:30:00","Comments":"107","Reactions, Comments and Shares":"185","Reach from Organic posts":"5998","Shares":"2","Reactions":"76","Total clicks":"184"},{"Date":"Lifetime","Post type":"Photos","Reach":"6538","Reach from Boosted posts":"0","3-second video views":"0","Views":"13065","Publish time":"2026-01-07 04:30:00","Comments":"157","Reactions, Comments and Shares":"238","Reach from Organic posts":"6538","Shares":"2","Reactions":"79","Total clicks":"294"},{"Date":"Lifetime","Post type":"Photos","Reach":"4478","Reach from Boosted posts":"0","3-second video views":"0","Views":"8426","Publish time":"2026-01-08 04:52:00","Comments":"69","Reactions, Comments and Shares":"140","Reach from Organic posts":"4478","Shares":"0","Reactions":"71","Total clicks":"88"},{"Date":"Lifetime","Post type":"Photos","Reach":"12645","Reach from Boosted posts":"0","3-second video views":"0","Views":"20681","Publish time":"2026-01-10 05:23:00","Comments":"456","Reactions, Comments and Shares":"930","Reach from Organic posts":"12645","Shares":"49","Reactions":"425","Total clicks":"700"},{"Date":"Lifetime","Post type":"Photos","Reach":"5137","Reach from Boosted posts":"0","3-second video views":"0","Views":"9839","Publish time":"2026-01-12 06:16:00","Comments":"94","Reactions, Comments and Shares":"163","Reach from Organic posts":"5137","Shares":"1","Reactions":"68","Total clicks":"143"},{"Date":"Lifetime","Post type":"Photos","Reach":"5841","Reach from Boosted posts":"0","3-second video views":"0","Views":"11615","Publish time":"2026-01-13 03:05:00","Comments":"101","Reactions, Comments and Shares":"165","Reach from Organic posts":"5841","Shares":"2","Reactions":"62","Total clicks":"169"},{"Date":"Lifetime","Post type":"Photos","Reach":"36764","Reach from Boosted posts":"0","3-second video views":"0","Views":"91272","Publish time":"2026-01-15 01:54:00","Comments":"844","Reactions, Comments and Shares":"1742","Reach from Organic posts":"36764","Shares":"119","Reactions":"779","Total clicks":"2210"},{"Date":"Lifetime","Post type":"Photos","Reach":"7088","Reach from Boosted posts":"0","3-second video views":"0","Views":"13053","Publish time":"2026-01-18 01:30:00","Comments":"175","Reactions, Comments and Shares":"267","Reach from Organic posts":"7088","Shares":"7","Reactions":"85","Total clicks":"310"},{"Date":"Lifetime","Post type":"Photos","Reach":"5968","Reach from Boosted posts":"0","3-second video views":"0","Views":"10783","Publish time":"2026-01-19 03:00:00","Comments":"128","Reactions, Comments and Shares":"185","Reach from Organic posts":"5968","Shares":"1","Reactions":"56","Total clicks":"159"},{"Date":"Lifetime","Post type":"Photos","Reach":"13504","Reach from Boosted posts":"0","3-second video views":"0","Views":"22176","Publish time":"2026-01-20 00:40:00","Comments":"466","Reactions, Comments and Shares":"833","Reach from Organic posts":"13504","Shares":"31","Reactions":"336","Total clicks":"839"},{"Date":"Lifetime","Post type":"Photos","Reach":"17131","Reach from Boosted posts":"0","3-second video views":"0","Views":"50229","Publish time":"2026-01-20 04:30:00","Comments":"322","Reactions, Comments and Shares":"491","Reach from Organic posts":"17131","Shares":"9","Reactions":"160","Total clicks":"309"},{"Date":"Lifetime","Post type":"Photos","Reach":"4235","Reach from Boosted posts":"0","3-second video views":"0","Views":"8003","Publish time":"2026-01-22 05:13:00","Comments":"57","Reactions, Comments and Shares":"110","Reach from Organic posts":"4235","Shares":"1","Reactions":"52","Total clicks":"137"},{"Date":"Lifetime","Post type":"Photos","Reach":"6685","Reach from Boosted posts":"0","3-second video views":"0","Views":"11414","Publish time":"2026-01-23 04:43:00","Comments":"45","Reactions, Comments and Shares":"117","Reach from Organic posts":"6685","Shares":"1","Reactions":"71","Total clicks":"117"},{"Date":"Lifetime","Post type":"Photos","Reach":"10","Reach from Boosted posts":"0","3-second video views":"0","Views":"21","Publish time":"2026-01-25 18:46:00","Comments":"48","Reactions, Comments and Shares":"99","Reach from Organic posts":"10","Shares":"0","Reactions":"51","Total clicks":"1"},{"Date":"Lifetime","Post type":"Photos","Reach":"5492","Reach from Boosted posts":"0","3-second video views":"0","Views":"9578","Publish time":"2026-01-27 00:31:00","Comments":"39","Reactions, Comments and Shares":"89","Reach from Organic posts":"5492","Shares":"2","Reactions":"48","Total clicks":"255"},{"Date":"Lifetime","Post type":"Photos","Reach":"7249","Reach from Boosted posts":"0","3-second video views":"0","Views":"12691","Publish time":"2026-01-27 06:00:00","Comments":"311","Reactions, Comments and Shares":"439","Reach from Organic posts":"7249","Shares":"17","Reactions":"111","Total clicks":"453"}]},{"name":"Khu Vườn Trên Mây","rows":[{"Date":"Lifetime","Post type":"Photos","Reach":"403082","Reach from Boosted posts":"300136","3-second video views":"0","Views":"775358","Publish time":"2026-01-29 04:00:00","Comments":"2878","Reactions, Comments and Shares":"5965","Reach from Organic posts":"111131","Shares":"1558","Reactions":"1529","Total clicks":"9935"},{"Date":"Lifetime","Post type":"Photos","Reach":"53769","Reach from Boosted posts":"0","3-second video views":"0","Views":"86694","Publish time":"2026-04-30 06:02:00","Comments":"2491","Reactions, Comments and Shares":"3118","Reach from Organic posts":"53769","Shares":"12","Reactions":"615","Total clicks":"5227"},{"Date":"Lifetime","Post type":"Photos","Reach":"18417","Reach from Boosted posts":"0","3-second video views":"0","Views":"34120","Publish time":"2026-04-23 19:28:00","Comments":"83","Reactions, Comments and Shares":"393","Reach from Organic posts":"18417","Shares":"2","Reactions":"308","Total clicks":"1399"},{"Date":"Lifetime","Post type":"Photos","Reach":"14328","Reach from Boosted posts":"0","3-second video views":"0","Views":"25422","Publish time":"2026-04-23 06:00:00","Comments":"35","Reactions, Comments and Shares":"231","Reach from Organic posts":"14328","Shares":"2","Reactions":"194","Total clicks":"382"},{"Date":"Lifetime","Post type":"Videos","Reach":"30191","Reach from Boosted posts":"0","3-second video views":"9248","Views":"43614","Publish time":"2026-04-17 05:36:00","Comments":"1389","Reactions, Comments and Shares":"2000","Reach from Organic posts":"30191","Shares":"13","Reactions":"598","Total clicks":"3239"},{"Date":"Lifetime","Post type":"Photos","Reach":"39822","Reach from Boosted posts":"0","3-second video views":"0","Views":"66913","Publish time":"2026-04-14 05:00:00","Comments":"41","Reactions, Comments and Shares":"392","Reach from Organic posts":"39822","Shares":"2","Reactions":"349","Total clicks":"2046"},{"Date":"Lifetime","Post type":"Photos","Reach":"21","Reach from Boosted posts":"0","3-second video views":"0","Views":"39","Publish time":"2026-04-13 00:41:00","Comments":"34","Reactions, Comments and Shares":"163","Reach from Organic posts":"21","Shares":"0","Reactions":"129","Total clicks":"4"},{"Date":"Lifetime","Post type":"Photos","Reach":"15311","Reach from Boosted posts":"0","3-second video views":"0","Views":"26734","Publish time":"2026-04-10 06:00:00","Comments":"30","Reactions, Comments and Shares":"253","Reach from Organic posts":"15311","Shares":"2","Reactions":"221","Total clicks":"848"},{"Date":"Lifetime","Post type":"Photos","Reach":"14463","Reach from Boosted posts":"0","3-second video views":"0","Views":"26425","Publish time":"2026-04-08 05:00:00","Comments":"24","Reactions, Comments and Shares":"179","Reach from Organic posts":"14463","Shares":"3","Reactions":"152","Total clicks":"825"},{"Date":"Lifetime","Post type":"Photos","Reach":"33701","Reach from Boosted posts":"0","3-second video views":"0","Views":"25165","Publish time":"2026-04-03 05:01:00","Comments":"90","Reactions, Comments and Shares":"471","Reach from Organic posts":"33701","Shares":"3","Reactions":"378","Total clicks":"3383"},{"Date":"Lifetime","Post type":"Photos","Reach":"15974","Reach from Boosted posts":"0","3-second video views":"0","Views":"24157","Publish time":"2026-04-01 05:01:00","Comments":"26","Reactions, Comments and Shares":"257","Reach from Organic posts":"15974","Shares":"2","Reactions":"229","Total clicks":"1464"},{"Date":"Lifetime","Post type":"Videos","Reach":"16702","Reach from Boosted posts":"0","3-second video views":"5195","Views":"22901","Publish time":"2026-03-28 05:02:00","Comments":"51","Reactions, Comments and Shares":"232","Reach from Organic posts":"16702","Shares":"0","Reactions":"181","Total clicks":"475"},{"Date":"Lifetime","Post type":"Photos","Reach":"16717","Reach from Boosted posts":"0","3-second video views":"0","Views":"32785","Publish time":"2026-03-20 05:00:00","Comments":"68","Reactions, Comments and Shares":"420","Reach from Organic posts":"16717","Shares":"2","Reactions":"350","Total clicks":"1174"},{"Date":"Lifetime","Post type":"Photos","Reach":"21353","Reach from Boosted posts":"0","3-second video views":"0","Views":"40990","Publish time":"2026-03-19 05:00:00","Comments":"96","Reactions, Comments and Shares":"412","Reach from Organic posts":"21353","Shares":"1","Reactions":"315","Total clicks":"2162"},{"Date":"Lifetime","Post type":"Photos","Reach":"21512","Reach from Boosted posts":"0","3-second video views":"0","Views":"44481","Publish time":"2026-03-12 05:00:00","Comments":"92","Reactions, Comments and Shares":"511","Reach from Organic posts":"21512","Shares":"2","Reactions":"417","Total clicks":"2222"},{"Date":"Lifetime","Post type":"Photos","Reach":"156540","Reach from Boosted posts":"0","3-second video views":"0","Views":"259827","Publish time":"2026-03-07 19:00:00","Comments":"2186","Reactions, Comments and Shares":"4461","Reach from Organic posts":"156540","Shares":"1203","Reactions":"1072","Total clicks":"5128"},{"Date":"Lifetime","Post type":"Photos","Reach":"16976","Reach from Boosted posts":"0","3-second video views":"0","Views":"36323","Publish time":"2026-03-06 05:00:00","Comments":"24","Reactions, Comments and Shares":"255","Reach from Organic posts":"16976","Shares":"3","Reactions":"228","Total clicks":"580"},{"Date":"Lifetime","Post type":"Photos","Reach":"28538","Reach from Boosted posts":"0","3-second video views":"0","Views":"50682","Publish time":"2026-03-05 04:00:00","Comments":"194","Reactions, Comments and Shares":"1489","Reach from Organic posts":"28538","Shares":"2","Reactions":"1293","Total clicks":"2055"},{"Date":"Lifetime","Post type":"Photos","Reach":"10","Reach from Boosted posts":"0","3-second video views":"0","Views":"11","Publish time":"2026-03-04 20:22:00","Comments":"5","Reactions, Comments and Shares":"139","Reach from Organic posts":"10","Shares":"0","Reactions":"134","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"9152","Reach from Boosted posts":"0","3-second video views":"0","Views":"19311","Publish time":"2026-03-03 01:05:00","Comments":"18","Reactions, Comments and Shares":"102","Reach from Organic posts":"9152","Shares":"0","Reactions":"84","Total clicks":"603"},{"Date":"Lifetime","Post type":"Photos","Reach":"21898","Reach from Boosted posts":"0","3-second video views":"0","Views":"50048","Publish time":"2026-02-26 04:00:00","Comments":"1320","Reactions, Comments and Shares":"1682","Reach from Organic posts":"21898","Shares":"13","Reactions":"349","Total clicks":"2561"},{"Date":"Lifetime","Post type":"Photos","Reach":"15230","Reach from Boosted posts":"0","3-second video views":"0","Views":"31639","Publish time":"2026-02-24 04:00:00","Comments":"39","Reactions, Comments and Shares":"163","Reach from Organic posts":"15230","Shares":"2","Reactions":"122","Total clicks":"751"},{"Date":"Lifetime","Post type":"Text","Reach":"18161","Reach from Boosted posts":"0","3-second video views":"0","Views":"34107","Publish time":"2026-02-23 04:20:00","Comments":"16","Reactions, Comments and Shares":"109","Reach from Organic posts":"18161","Shares":"2","Reactions":"91","Total clicks":"796"},{"Date":"Lifetime","Post type":"Videos","Reach":"13856","Reach from Boosted posts":"0","3-second video views":"4560","Views":"22015","Publish time":"2026-02-20 04:00:00","Comments":"23","Reactions, Comments and Shares":"113","Reach from Organic posts":"13856","Shares":"1","Reactions":"89","Total clicks":"129"},{"Date":"Lifetime","Post type":"Photos","Reach":"17919","Reach from Boosted posts":"0","3-second video views":"0","Views":"31959","Publish time":"2026-02-19 19:09:00","Comments":"36","Reactions, Comments and Shares":"130","Reach from Organic posts":"17919","Shares":"5","Reactions":"89","Total clicks":"545"},{"Date":"Lifetime","Post type":"Videos","Reach":"15119","Reach from Boosted posts":"0","3-second video views":"4454","Views":"21247","Publish time":"2026-02-18 17:00:00","Comments":"16","Reactions, Comments and Shares":"107","Reach from Organic posts":"15119","Shares":"0","Reactions":"91","Total clicks":"171"},{"Date":"Lifetime","Post type":"Videos","Reach":"11321","Reach from Boosted posts":"0","3-second video views":"2410","Views":"16096","Publish time":"2026-02-17 18:00:00","Comments":"6","Reactions, Comments and Shares":"74","Reach from Organic posts":"11321","Shares":"0","Reactions":"68","Total clicks":"56"},{"Date":"Lifetime","Post type":"Videos","Reach":"10622","Reach from Boosted posts":"0","3-second video views":"2528","Views":"15115","Publish time":"2026-02-16 17:00:00","Comments":"8","Reactions, Comments and Shares":"86","Reach from Organic posts":"10622","Shares":"0","Reactions":"78","Total clicks":"90"},{"Date":"Lifetime","Post type":"Videos","Reach":"10160","Reach from Boosted posts":"0","3-second video views":"3143","Views":"15863","Publish time":"2026-02-16 00:01:00","Comments":"8","Reactions, Comments and Shares":"82","Reach from Organic posts":"10160","Shares":"0","Reactions":"74","Total clicks":"92"},{"Date":"Lifetime","Post type":"Text","Reach":"22184","Reach from Boosted posts":"0","3-second video views":"0","Views":"39031","Publish time":"2026-02-15 01:00:00","Comments":"66","Reactions, Comments and Shares":"145","Reach from Organic posts":"22184","Shares":"1","Reactions":"78","Total clicks":"1546"},{"Date":"Lifetime","Post type":"Videos","Reach":"9896","Reach from Boosted posts":"0","3-second video views":"3060","Views":"13197","Publish time":"2026-02-14 04:00:00","Comments":"7","Reactions, Comments and Shares":"59","Reach from Organic posts":"9896","Shares":"0","Reactions":"52","Total clicks":"46"},{"Date":"Lifetime","Post type":"Videos","Reach":"9968","Reach from Boosted posts":"0","3-second video views":"3237","Views":"14428","Publish time":"2026-02-12 05:01:00","Comments":"8","Reactions, Comments and Shares":"61","Reach from Organic posts":"9968","Shares":"0","Reactions":"53","Total clicks":"58"},{"Date":"Lifetime","Post type":"Photos","Reach":"10485","Reach from Boosted posts":"0","3-second video views":"0","Views":"19548","Publish time":"2026-02-12 01:08:00","Comments":"19","Reactions, Comments and Shares":"67","Reach from Organic posts":"10485","Shares":"1","Reactions":"47","Total clicks":"437"},{"Date":"Lifetime","Post type":"Photos","Reach":"456875","Reach from Boosted posts":"442737","3-second video views":"0","Views":"700570","Publish time":"2026-02-11 20:11:00","Comments":"29","Reactions, Comments and Shares":"207","Reach from Organic posts":"13593","Shares":"1","Reactions":"177","Total clicks":"3541"},{"Date":"Lifetime","Post type":"Videos","Reach":"10240","Reach from Boosted posts":"0","3-second video views":"2740","Views":"14790","Publish time":"2026-02-11 05:00:00","Comments":"12","Reactions, Comments and Shares":"60","Reach from Organic posts":"10240","Shares":"0","Reactions":"48","Total clicks":"68"},{"Date":"Lifetime","Post type":"Text","Reach":"12532","Reach from Boosted posts":"0","3-second video views":"0","Views":"21242","Publish time":"2026-02-10 05:00:00","Comments":"35","Reactions, Comments and Shares":"93","Reach from Organic posts":"12532","Shares":"1","Reactions":"57","Total clicks":"271"},{"Date":"Lifetime","Post type":"Photos","Reach":"10811","Reach from Boosted posts":"0","3-second video views":"0","Views":"18434","Publish time":"2026-02-10 00:47:00","Comments":"3","Reactions, Comments and Shares":"62","Reach from Organic posts":"10811","Shares":"10","Reactions":"49","Total clicks":"156"},{"Date":"Lifetime","Post type":"Text","Reach":"8980","Reach from Boosted posts":"0","3-second video views":"0","Views":"15375","Publish time":"2026-02-09 23:00:00","Comments":"9","Reactions, Comments and Shares":"34","Reach from Organic posts":"8980","Shares":"0","Reactions":"25","Total clicks":"134"},{"Date":"Lifetime","Post type":"Photos","Reach":"7295","Reach from Boosted posts":"0","3-second video views":"0","Views":"12969","Publish time":"2026-02-09 19:03:00","Comments":"3","Reactions, Comments and Shares":"27","Reach from Organic posts":"7295","Shares":"0","Reactions":"24","Total clicks":"129"},{"Date":"Lifetime","Post type":"Photos","Reach":"17504","Reach from Boosted posts":"0","3-second video views":"0","Views":"32664","Publish time":"2026-02-09 05:00:00","Comments":"56","Reactions, Comments and Shares":"188","Reach from Organic posts":"17504","Shares":"1","Reactions":"131","Total clicks":"1813"},{"Date":"Lifetime","Post type":"Text","Reach":"15814","Reach from Boosted posts":"0","3-second video views":"0","Views":"28584","Publish time":"2026-02-09 00:00:00","Comments":"15","Reactions, Comments and Shares":"78","Reach from Organic posts":"15814","Shares":"1","Reactions":"62","Total clicks":"473"},{"Date":"Lifetime","Post type":"Photos","Reach":"15223","Reach from Boosted posts":"0","3-second video views":"0","Views":"35448","Publish time":"2026-02-08 05:00:00","Comments":"14","Reactions, Comments and Shares":"796","Reach from Organic posts":"15223","Shares":"224","Reactions":"558","Total clicks":"539"},{"Date":"Lifetime","Post type":"Text","Reach":"17829","Reach from Boosted posts":"0","3-second video views":"0","Views":"32880","Publish time":"2026-02-07 06:00:00","Comments":"39","Reactions, Comments and Shares":"123","Reach from Organic posts":"17829","Shares":"1","Reactions":"83","Total clicks":"865"},{"Date":"Lifetime","Post type":"Photos","Reach":"11711","Reach from Boosted posts":"0","3-second video views":"0","Views":"23423","Publish time":"2026-02-07 00:00:00","Comments":"21","Reactions, Comments and Shares":"94","Reach from Organic posts":"11711","Shares":"3","Reactions":"70","Total clicks":"1352"},{"Date":"Lifetime","Post type":"Photos","Reach":"17222","Reach from Boosted posts":"0","3-second video views":"0","Views":"43367","Publish time":"2026-02-06 22:00:00","Comments":"7","Reactions, Comments and Shares":"768","Reach from Organic posts":"17222","Shares":"684","Reactions":"77","Total clicks":"926"},{"Date":"Lifetime","Post type":"Photos","Reach":"13060","Reach from Boosted posts":"0","3-second video views":"0","Views":"27701","Publish time":"2026-02-06 05:00:00","Comments":"24","Reactions, Comments and Shares":"298","Reach from Organic posts":"13060","Shares":"183","Reactions":"91","Total clicks":"582"},{"Date":"Lifetime","Post type":"Photos","Reach":"140055","Reach from Boosted posts":"132491","3-second video views":"0","Views":"323624","Publish time":"2026-02-06 00:00:00","Comments":"93","Reactions, Comments and Shares":"465","Reach from Organic posts":"12362","Shares":"1","Reactions":"371","Total clicks":"5217"},{"Date":"Lifetime","Post type":"Photos","Reach":"20379","Reach from Boosted posts":"0","3-second video views":"0","Views":"56926","Publish time":"2026-02-05 22:36:00","Comments":"7","Reactions, Comments and Shares":"400","Reach from Organic posts":"20379","Shares":"146","Reactions":"247","Total clicks":"1171"},{"Date":"Lifetime","Post type":"Photos","Reach":"12455","Reach from Boosted posts":"0","3-second video views":"0","Views":"27503","Publish time":"2026-02-05 06:00:00","Comments":"13","Reactions, Comments and Shares":"320","Reach from Organic posts":"12455","Shares":"229","Reactions":"78","Total clicks":"854"},{"Date":"Lifetime","Post type":"Photos","Reach":"190792","Reach from Boosted posts":"180246","3-second video views":"0","Views":"349965","Publish time":"2026-02-05 05:00:00","Comments":"47","Reactions, Comments and Shares":"428","Reach from Organic posts":"10392","Shares":"4","Reactions":"377","Total clicks":"3151"},{"Date":"Lifetime","Post type":"Photos","Reach":"19488","Reach from Boosted posts":"0","3-second video views":"0","Views":"44533","Publish time":"2026-02-05 00:00:00","Comments":"49","Reactions, Comments and Shares":"954","Reach from Organic posts":"19488","Shares":"69","Reactions":"836","Total clicks":"2192"},{"Date":"Lifetime","Post type":"Text","Reach":"20428","Reach from Boosted posts":"0","3-second video views":"0","Views":"38442","Publish time":"2026-02-04 20:30:00","Comments":"6","Reactions, Comments and Shares":"115","Reach from Organic posts":"20428","Shares":"2","Reactions":"107","Total clicks":"1464"},{"Date":"Lifetime","Post type":"Text","Reach":"28081","Reach from Boosted posts":"0","3-second video views":"0","Views":"54783","Publish time":"2026-02-04 07:41:00","Comments":"134","Reactions, Comments and Shares":"275","Reach from Organic posts":"28081","Shares":"11","Reactions":"130","Total clicks":"4493"},{"Date":"Lifetime","Post type":"Photos","Reach":"17155","Reach from Boosted posts":"0","3-second video views":"0","Views":"37089","Publish time":"2026-02-04 02:00:00","Comments":"83","Reactions, Comments and Shares":"258","Reach from Organic posts":"17155","Shares":"17","Reactions":"158","Total clicks":"1968"},{"Date":"Lifetime","Post type":"Photos","Reach":"16663","Reach from Boosted posts":"0","3-second video views":"0","Views":"34239","Publish time":"2026-02-03 23:19:00","Comments":"79","Reactions, Comments and Shares":"210","Reach from Organic posts":"16663","Shares":"2","Reactions":"129","Total clicks":"2319"},{"Date":"Lifetime","Post type":"Videos","Reach":"519067","Reach from Boosted posts":"506108","3-second video views":"138778","Views":"648343","Publish time":"2026-02-03 04:00:00","Comments":"60","Reactions, Comments and Shares":"391","Reach from Organic posts":"18679","Shares":"2","Reactions":"329","Total clicks":"1800"},{"Date":"Lifetime","Post type":"Photos","Reach":"22586","Reach from Boosted posts":"0","3-second video views":"0","Views":"49449","Publish time":"2026-02-02 19:38:00","Comments":"275","Reactions, Comments and Shares":"452","Reach from Organic posts":"22586","Shares":"7","Reactions":"170","Total clicks":"3438"},{"Date":"Lifetime","Post type":"Photos","Reach":"798507","Reach from Boosted posts":"777755","3-second video views":"0","Views":"1355367","Publish time":"2026-02-01 19:14:00","Comments":"477","Reactions, Comments and Shares":"2115","Reach from Organic posts":"34294","Shares":"15","Reactions":"1623","Total clicks":"9905"},{"Date":"Lifetime","Post type":"Photos","Reach":"363","Reach from Boosted posts":"0","3-second video views":"0","Views":"729","Publish time":"2026-02-01 18:55:00","Comments":"59","Reactions, Comments and Shares":"192","Reach from Organic posts":"363","Shares":"4","Reactions":"129","Total clicks":"14"},{"Date":"Lifetime","Post type":"Photos","Reach":"15025","Reach from Boosted posts":"0","3-second video views":"0","Views":"33979","Publish time":"2026-02-01 04:00:00","Comments":"88","Reactions, Comments and Shares":"263","Reach from Organic posts":"15025","Shares":"4","Reactions":"171","Total clicks":"2561"},{"Date":"Lifetime","Post type":"Text","Reach":"20242","Reach from Boosted posts":"0","3-second video views":"0","Views":"40231","Publish time":"2026-02-01 01:19:00","Comments":"33","Reactions, Comments and Shares":"266","Reach from Organic posts":"20242","Shares":"3","Reactions":"230","Total clicks":"1295"},{"Date":"Lifetime","Post type":"Text","Reach":"34127","Reach from Boosted posts":"0","3-second video views":"0","Views":"61415","Publish time":"2026-02-01 01:05:00","Comments":"92","Reactions, Comments and Shares":"455","Reach from Organic posts":"34127","Shares":"1","Reactions":"362","Total clicks":"2233"},{"Date":"Lifetime","Post type":"Text","Reach":"65740","Reach from Boosted posts":"0","3-second video views":"0","Views":"128635","Publish time":"2026-01-31 05:53:00","Comments":"276","Reactions, Comments and Shares":"3360","Reach from Organic posts":"65740","Shares":"10","Reactions":"3074","Total clicks":"7734"},{"Date":"Lifetime","Post type":"Photos","Reach":"16828","Reach from Boosted posts":"0","3-second video views":"0","Views":"39323","Publish time":"2026-01-30 04:00:00","Comments":"52","Reactions, Comments and Shares":"371","Reach from Organic posts":"16828","Shares":"1","Reactions":"318","Total clicks":"2018"},{"Date":"Lifetime","Post type":"Text","Reach":"27097","Reach from Boosted posts":"0","3-second video views":"0","Views":"51507","Publish time":"2026-01-01 00:32:00","Comments":"30","Reactions, Comments and Shares":"259","Reach from Organic posts":"27097","Shares":"1","Reactions":"228","Total clicks":"1702"},{"Date":"Lifetime","Post type":"Photos","Reach":"14201","Reach from Boosted posts":"0","3-second video views":"0","Views":"33958","Publish time":"2026-01-29 00:17:00","Comments":"51","Reactions, Comments and Shares":"227","Reach from Organic posts":"14201","Shares":"1","Reactions":"175","Total clicks":"1331"},{"Date":"Lifetime","Post type":"Photos","Reach":"21730","Reach from Boosted posts":"0","3-second video views":"0","Views":"44328","Publish time":"2026-01-28 04:00:00","Comments":"373","Reactions, Comments and Shares":"597","Reach from Organic posts":"21730","Shares":"2","Reactions":"222","Total clicks":"2604"},{"Date":"Lifetime","Post type":"Text","Reach":"50971","Reach from Boosted posts":"0","3-second video views":"0","Views":"87419","Publish time":"2026-01-27 20:58:00","Comments":"373","Reactions, Comments and Shares":"672","Reach from Organic posts":"50971","Shares":"1","Reactions":"298","Total clicks":"3220"},{"Date":"Lifetime","Post type":"Photos","Reach":"15343","Reach from Boosted posts":"0","3-second video views":"0","Views":"25428","Publish time":"2026-01-27 06:27:00","Comments":"6","Reactions, Comments and Shares":"63","Reach from Organic posts":"15343","Shares":"0","Reactions":"57","Total clicks":"193"},{"Date":"Lifetime","Post type":"Photos","Reach":"74","Reach from Boosted posts":"0","3-second video views":"0","Views":"115","Publish time":"2026-01-26 22:55:00","Comments":"63","Reactions, Comments and Shares":"334","Reach from Organic posts":"74","Shares":"0","Reactions":"271","Total clicks":"5"},{"Date":"Lifetime","Post type":"Photos","Reach":"14756","Reach from Boosted posts":"0","3-second video views":"0","Views":"25337","Publish time":"2026-01-26 22:45:00","Comments":"14","Reactions, Comments and Shares":"146","Reach from Organic posts":"14756","Shares":"2","Reactions":"130","Total clicks":"346"},{"Date":"Lifetime","Post type":"Photos","Reach":"23512","Reach from Boosted posts":"0","3-second video views":"0","Views":"37949","Publish time":"2026-01-26 05:00:00","Comments":"54","Reactions, Comments and Shares":"310","Reach from Organic posts":"23512","Shares":"1","Reactions":"255","Total clicks":"774"},{"Date":"Lifetime","Post type":"Photos","Reach":"19649","Reach from Boosted posts":"0","3-second video views":"0","Views":"31664","Publish time":"2026-01-25 00:00:00","Comments":"50","Reactions, Comments and Shares":"229","Reach from Organic posts":"19649","Shares":"1","Reactions":"178","Total clicks":"535"},{"Date":"Lifetime","Post type":"Photos","Reach":"24288","Reach from Boosted posts":"0","3-second video views":"0","Views":"37339","Publish time":"2026-01-24 04:00:00","Comments":"31","Reactions, Comments and Shares":"166","Reach from Organic posts":"24288","Shares":"3","Reactions":"132","Total clicks":"525"},{"Date":"Lifetime","Post type":"Photos","Reach":"33030","Reach from Boosted posts":"0","3-second video views":"0","Views":"50407","Publish time":"2026-01-23 06:44:00","Comments":"17","Reactions, Comments and Shares":"217","Reach from Organic posts":"33030","Shares":"2","Reactions":"198","Total clicks":"1067"},{"Date":"Lifetime","Post type":"Photos","Reach":"21430","Reach from Boosted posts":"0","3-second video views":"0","Views":"33200","Publish time":"2026-01-21 07:10:00","Comments":"21","Reactions, Comments and Shares":"148","Reach from Organic posts":"21430","Shares":"1","Reactions":"126","Total clicks":"840"},{"Date":"Lifetime","Post type":"Photos","Reach":"29324","Reach from Boosted posts":"0","3-second video views":"0","Views":"48364","Publish time":"2026-01-19 06:15:00","Comments":"39","Reactions, Comments and Shares":"219","Reach from Organic posts":"29324","Shares":"2","Reactions":"178","Total clicks":"1139"},{"Date":"Lifetime","Post type":"Videos","Reach":"27427","Reach from Boosted posts":"0","3-second video views":"7827","Views":"44005","Publish time":"2026-01-18 22:37:00","Comments":"88","Reactions, Comments and Shares":"318","Reach from Organic posts":"27427","Shares":"1","Reactions":"229","Total clicks":"1222"},{"Date":"Lifetime","Post type":"Photos","Reach":"28350","Reach from Boosted posts":"0","3-second video views":"0","Views":"50061","Publish time":"2026-01-18 05:05:00","Comments":"47","Reactions, Comments and Shares":"276","Reach from Organic posts":"28350","Shares":"1","Reactions":"228","Total clicks":"2110"},{"Date":"Lifetime","Post type":"Photos","Reach":"9585","Reach from Boosted posts":"0","3-second video views":"0","Views":"18078","Publish time":"2026-01-16 23:36:00","Comments":"40","Reactions, Comments and Shares":"194","Reach from Organic posts":"9585","Shares":"1","Reactions":"153","Total clicks":"564"},{"Date":"Lifetime","Post type":"Videos","Reach":"23522","Reach from Boosted posts":"0","3-second video views":"10460","Views":"28376","Publish time":"2026-01-16 11:09:00","Comments":"17","Reactions, Comments and Shares":"234","Reach from Organic posts":"23522","Shares":"0","Reactions":"217","Total clicks":"795"},{"Date":"Lifetime","Post type":"Videos","Reach":"40746","Reach from Boosted posts":"0","3-second video views":"11308","Views":"63873","Publish time":"2026-01-14 05:00:00","Comments":"2189","Reactions, Comments and Shares":"2656","Reach from Organic posts":"40746","Shares":"7","Reactions":"460","Total clicks":"4084"},{"Date":"Lifetime","Post type":"Photos","Reach":"22504","Reach from Boosted posts":"0","3-second video views":"0","Views":"44990","Publish time":"2026-01-10 05:00:00","Comments":"87","Reactions, Comments and Shares":"574","Reach from Organic posts":"22504","Shares":"2","Reactions":"485","Total clicks":"1763"},{"Date":"Lifetime","Post type":"Photos","Reach":"13896","Reach from Boosted posts":"0","3-second video views":"0","Views":"24093","Publish time":"2026-01-09 04:30:00","Comments":"35","Reactions, Comments and Shares":"192","Reach from Organic posts":"13896","Shares":"4","Reactions":"153","Total clicks":"364"},{"Date":"Lifetime","Post type":"Text","Reach":"27725","Reach from Boosted posts":"0","3-second video views":"0","Views":"49573","Publish time":"2026-01-05 08:14:00","Comments":"53","Reactions, Comments and Shares":"308","Reach from Organic posts":"27725","Shares":"2","Reactions":"253","Total clicks":"1684"},{"Date":"Lifetime","Post type":"Photos","Reach":"17833","Reach from Boosted posts":"0","3-second video views":"0","Views":"34447","Publish time":"2026-01-01 01:30:00","Comments":"53","Reactions, Comments and Shares":"494","Reach from Organic posts":"17833","Shares":"2","Reactions":"439","Total clicks":"611"}]},{"name":"Cờ Tỷ Phú 2","rows":[{"Date":"Lifetime","Post type":"Photos","Reach":"2019","Reach from Boosted posts":"0","3-second video views":"0","Views":"4140","Publish time":"2026-01-06 19:39:00","Comments":"7","Reactions, Comments and Shares":"295","Reach from Organic posts":"2019","Shares":"0","Reactions":"288","Total clicks":"47"},{"Date":"Lifetime","Post type":"Photos","Reach":"624","Reach from Boosted posts":"0","3-second video views":"0","Views":"1196","Publish time":"2026-04-27 22:49:00","Comments":"6","Reactions, Comments and Shares":"77","Reach from Organic posts":"624","Shares":"0","Reactions":"71","Total clicks":"14"},{"Date":"Lifetime","Post type":"Photos","Reach":"921","Reach from Boosted posts":"0","3-second video views":"0","Views":"1654","Publish time":"2026-04-21 19:26:00","Comments":"3","Reactions, Comments and Shares":"93","Reach from Organic posts":"921","Shares":"0","Reactions":"90","Total clicks":"29"},{"Date":"Lifetime","Post type":"Photos","Reach":"1282","Reach from Boosted posts":"0","3-second video views":"0","Views":"2461","Publish time":"2026-04-13 23:23:00","Comments":"10","Reactions, Comments and Shares":"194","Reach from Organic posts":"1282","Shares":"1","Reactions":"183","Total clicks":"37"},{"Date":"Lifetime","Post type":"Photos","Reach":"1390","Reach from Boosted posts":"0","3-second video views":"0","Views":"2788","Publish time":"2026-04-07 02:17:00","Comments":"8","Reactions, Comments and Shares":"215","Reach from Organic posts":"1390","Shares":"0","Reactions":"207","Total clicks":"47"},{"Date":"Lifetime","Post type":"Photos","Reach":"1485","Reach from Boosted posts":"0","3-second video views":"0","Views":"2652","Publish time":"2026-03-30 19:37:00","Comments":"5","Reactions, Comments and Shares":"263","Reach from Organic posts":"1485","Shares":"0","Reactions":"258","Total clicks":"34"},{"Date":"Lifetime","Post type":"Photos","Reach":"2077","Reach from Boosted posts":"0","3-second video views":"0","Views":"3892","Publish time":"2026-03-24 00:24:00","Comments":"10","Reactions, Comments and Shares":"287","Reach from Organic posts":"2077","Shares":"1","Reactions":"276","Total clicks":"53"},{"Date":"Lifetime","Post type":"Photos","Reach":"1493","Reach from Boosted posts":"0","3-second video views":"0","Views":"2895","Publish time":"2026-03-18 20:55:00","Comments":"8","Reactions, Comments and Shares":"248","Reach from Organic posts":"1493","Shares":"0","Reactions":"240","Total clicks":"8"},{"Date":"Lifetime","Post type":"Photos","Reach":"1569","Reach from Boosted posts":"0","3-second video views":"0","Views":"3003","Publish time":"2026-03-12 20:27:00","Comments":"3","Reactions, Comments and Shares":"253","Reach from Organic posts":"1569","Shares":"1","Reactions":"249","Total clicks":"11"},{"Date":"Lifetime","Post type":"Photos","Reach":"1739","Reach from Boosted posts":"0","3-second video views":"0","Views":"3605","Publish time":"2026-03-02 00:41:00","Comments":"3","Reactions, Comments and Shares":"277","Reach from Organic posts":"1739","Shares":"2","Reactions":"272","Total clicks":"39"},{"Date":"Lifetime","Post type":"Photos","Reach":"2161","Reach from Boosted posts":"0","3-second video views":"0","Views":"4351","Publish time":"2026-02-16 17:00:00","Comments":"1","Reactions, Comments and Shares":"300","Reach from Organic posts":"2161","Shares":"0","Reactions":"299","Total clicks":"44"},{"Date":"Lifetime","Post type":"Photos","Reach":"1784","Reach from Boosted posts":"0","3-second video views":"0","Views":"3450","Publish time":"2026-02-09 19:07:00","Comments":"3","Reactions, Comments and Shares":"190","Reach from Organic posts":"1784","Shares":"0","Reactions":"187","Total clicks":"11"},{"Date":"Lifetime","Post type":"Photos","Reach":"1394","Reach from Boosted posts":"0","3-second video views":"0","Views":"2665","Publish time":"2026-02-08 19:30:00","Comments":"1","Reactions, Comments and Shares":"151","Reach from Organic posts":"1394","Shares":"0","Reactions":"150","Total clicks":"9"},{"Date":"Lifetime","Post type":"Photos","Reach":"1857","Reach from Boosted posts":"0","3-second video views":"0","Views":"3698","Publish time":"2026-01-28 22:11:00","Comments":"11","Reactions, Comments and Shares":"182","Reach from Organic posts":"1857","Shares":"0","Reactions":"171","Total clicks":"34"},{"Date":"Lifetime","Post type":"Photos","Reach":"1923","Reach from Boosted posts":"0","3-second video views":"0","Views":"4056","Publish time":"2026-01-13 18:10:00","Comments":"2","Reactions, Comments and Shares":"365","Reach from Organic posts":"1923","Shares":"1","Reactions":"362","Total clicks":"29"}]}],"bai":[{"name":"Tonk & Spades ZingPlay","rows":[{"Date":"Lifetime","Post type":"Videos","Reach":"28734","Reach from Boosted posts":"27213","3-second video views":"20830","Views":"38095","Publish time":"2026-01-04 08:30:00","Comments":"17","Reactions, Comments and Shares":"142","Reach from Organic posts":"1232","Shares":"9","Reactions":"116","Total clicks":"67"},{"Date":"Lifetime","Post type":"Photos","Reach":"3329","Reach from Boosted posts":"0","3-second video views":"0","Views":"6419","Publish time":"2026-01-08 08:30:00","Comments":"532","Reactions, Comments and Shares":"780","Reach from Organic posts":"3329","Shares":"68","Reactions":"180","Total clicks":"258"},{"Date":"Lifetime","Post type":"Videos","Reach":"72341","Reach from Boosted posts":"71337","3-second video views":"73013","Views":"91532","Publish time":"2026-01-09 08:30:00","Comments":"1","Reactions, Comments and Shares":"117","Reach from Organic posts":"728","Shares":"2","Reactions":"114","Total clicks":"86"},{"Date":"Lifetime","Post type":"Videos","Reach":"111635","Reach from Boosted posts":"108429","3-second video views":"63319","Views":"146674","Publish time":"2026-01-13 08:30:00","Comments":"4","Reactions, Comments and Shares":"255","Reach from Organic posts":"2753","Shares":"10","Reactions":"241","Total clicks":"114"},{"Date":"Lifetime","Post type":"Videos","Reach":"117790","Reach from Boosted posts":"116949","3-second video views":"130380","Views":"144020","Publish time":"2026-01-14 08:30:00","Comments":"12","Reactions, Comments and Shares":"274","Reach from Organic posts":"955","Shares":"3","Reactions":"259","Total clicks":"213"},{"Date":"Lifetime","Post type":"Photos","Reach":"1277","Reach from Boosted posts":"0","3-second video views":"0","Views":"2278","Publish time":"2026-01-16 08:30:00","Comments":"90","Reactions, Comments and Shares":"154","Reach from Organic posts":"1277","Shares":"4","Reactions":"60","Total clicks":"76"},{"Date":"Lifetime","Post type":"Videos","Reach":"27953","Reach from Boosted posts":"27334","3-second video views":"22629","Views":"31266","Publish time":"2026-01-18 08:57:00","Comments":"3","Reactions, Comments and Shares":"56","Reach from Organic posts":"638","Shares":"2","Reactions":"51","Total clicks":"30"},{"Date":"Lifetime","Post type":"Videos","Reach":"1993","Reach from Boosted posts":"1472","3-second video views":"1386","Views":"2684","Publish time":"2026-01-20 08:30:00","Comments":"5","Reactions, Comments and Shares":"27","Reach from Organic posts":"513","Shares":"0","Reactions":"22","Total clicks":"3"},{"Date":"Lifetime","Post type":"Videos","Reach":"2222","Reach from Boosted posts":"1476","3-second video views":"1142","Views":"3758","Publish time":"2026-01-21 08:30:00","Comments":"0","Reactions, Comments and Shares":"32","Reach from Organic posts":"711","Shares":"0","Reactions":"32","Total clicks":"3"},{"Date":"Lifetime","Post type":"Photos","Reach":"1514","Reach from Boosted posts":"0","3-second video views":"0","Views":"2984","Publish time":"2026-01-22 08:30:00","Comments":"141","Reactions, Comments and Shares":"195","Reach from Organic posts":"1514","Shares":"5","Reactions":"49","Total clicks":"128"},{"Date":"Lifetime","Post type":"Videos","Reach":"2036","Reach from Boosted posts":"1623","3-second video views":"1067","Views":"2663","Publish time":"2026-01-23 08:30:00","Comments":"0","Reactions, Comments and Shares":"19","Reach from Organic posts":"391","Shares":"0","Reactions":"19","Total clicks":"3"},{"Date":"Lifetime","Post type":"Videos","Reach":"51360","Reach from Boosted posts":"51151","3-second video views":"51526","Views":"60364","Publish time":"2026-01-24 08:30:00","Comments":"4","Reactions, Comments and Shares":"86","Reach from Organic posts":"443","Shares":"1","Reactions":"81","Total clicks":"64"},{"Date":"Lifetime","Post type":"Photos","Reach":"1234","Reach from Boosted posts":"0","3-second video views":"0","Views":"2070","Publish time":"2026-01-27 08:30:00","Comments":"115","Reactions, Comments and Shares":"157","Reach from Organic posts":"1234","Shares":"2","Reactions":"40","Total clicks":"13"},{"Date":"Lifetime","Post type":"Videos","Reach":"449","Reach from Boosted posts":"0","3-second video views":"187","Views":"905","Publish time":"2026-01-28 08:30:00","Comments":"0","Reactions, Comments and Shares":"11","Reach from Organic posts":"449","Shares":"0","Reactions":"11","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"1189","Reach from Boosted posts":"0","3-second video views":"0","Views":"2022","Publish time":"2026-02-01 10:00:00","Comments":"69","Reactions, Comments and Shares":"110","Reach from Organic posts":"1189","Shares":"4","Reactions":"37","Total clicks":"54"},{"Date":"Lifetime","Post type":"Videos","Reach":"817","Reach from Boosted posts":"0","3-second video views":"338","Views":"1508","Publish time":"2026-02-05 08:30:00","Comments":"0","Reactions, Comments and Shares":"24","Reach from Organic posts":"817","Shares":"0","Reactions":"24","Total clicks":"2"},{"Date":"Lifetime","Post type":"Videos","Reach":"1700","Reach from Boosted posts":"1103","3-second video views":"1115","Views":"2510","Publish time":"2026-02-06 08:30:00","Comments":"2","Reactions, Comments and Shares":"30","Reach from Organic posts":"612","Shares":"0","Reactions":"28","Total clicks":"4"},{"Date":"Lifetime","Post type":"Photos","Reach":"757","Reach from Boosted posts":"0","3-second video views":"0","Views":"1347","Publish time":"2026-02-10 08:30:00","Comments":"41","Reactions, Comments and Shares":"66","Reach from Organic posts":"757","Shares":"1","Reactions":"24","Total clicks":"41"},{"Date":"Lifetime","Post type":"Videos","Reach":"1892","Reach from Boosted posts":"1220","3-second video views":"1602","Views":"2929","Publish time":"2026-02-11 08:30:00","Comments":"3","Reactions, Comments and Shares":"40","Reach from Organic posts":"635","Shares":"0","Reactions":"37","Total clicks":"4"},{"Date":"Lifetime","Post type":"Videos","Reach":"2908","Reach from Boosted posts":"2601","3-second video views":"1786","Views":"3541","Publish time":"2026-02-12 08:30:00","Comments":"0","Reactions, Comments and Shares":"17","Reach from Organic posts":"319","Shares":"0","Reactions":"17","Total clicks":"10"},{"Date":"Lifetime","Post type":"Videos","Reach":"365","Reach from Boosted posts":"0","3-second video views":"170","Views":"942","Publish time":"2026-02-13 08:30:00","Comments":"0","Reactions, Comments and Shares":"10","Reach from Organic posts":"365","Shares":"0","Reactions":"10","Total clicks":"1"},{"Date":"Lifetime","Post type":"Photos","Reach":"1074","Reach from Boosted posts":"0","3-second video views":"0","Views":"1850","Publish time":"2026-02-16 08:30:00","Comments":"90","Reactions, Comments and Shares":"135","Reach from Organic posts":"1074","Shares":"2","Reactions":"43","Total clicks":"75"},{"Date":"Lifetime","Post type":"Videos","Reach":"709","Reach from Boosted posts":"0","3-second video views":"329","Views":"1348","Publish time":"2026-02-18 08:30:00","Comments":"2","Reactions, Comments and Shares":"34","Reach from Organic posts":"709","Shares":"0","Reactions":"32","Total clicks":"5"},{"Date":"Lifetime","Post type":"Videos","Reach":"707","Reach from Boosted posts":"0","3-second video views":"396","Views":"1498","Publish time":"2026-02-20 08:37:00","Comments":"2","Reactions, Comments and Shares":"39","Reach from Organic posts":"707","Shares":"1","Reactions":"36","Total clicks":"3"},{"Date":"Lifetime","Post type":"Videos","Reach":"323","Reach from Boosted posts":"0","3-second video views":"139","Views":"777","Publish time":"2026-02-27 08:30:00","Comments":"3","Reactions, Comments and Shares":"13","Reach from Organic posts":"323","Shares":"0","Reactions":"10","Total clicks":"4"},{"Date":"Lifetime","Post type":"Photos","Reach":"533","Reach from Boosted posts":"0","3-second video views":"0","Views":"1034","Publish time":"2026-02-28 08:30:00","Comments":"3","Reactions, Comments and Shares":"15","Reach from Organic posts":"533","Shares":"1","Reactions":"11","Total clicks":"8"},{"Date":"Lifetime","Post type":"Videos","Reach":"840","Reach from Boosted posts":"0","3-second video views":"364","Views":"1639","Publish time":"2026-03-03 08:30:00","Comments":"6","Reactions, Comments and Shares":"33","Reach from Organic posts":"840","Shares":"1","Reactions":"26","Total clicks":"7"},{"Date":"Lifetime","Post type":"Photos","Reach":"958","Reach from Boosted posts":"0","3-second video views":"0","Views":"1718","Publish time":"2026-03-05 08:30:00","Comments":"74","Reactions, Comments and Shares":"111","Reach from Organic posts":"958","Shares":"2","Reactions":"35","Total clicks":"54"},{"Date":"Lifetime","Post type":"Photos","Reach":"471","Reach from Boosted posts":"0","3-second video views":"0","Views":"935","Publish time":"2026-03-06 08:30:00","Comments":"1","Reactions, Comments and Shares":"16","Reach from Organic posts":"471","Shares":"1","Reactions":"14","Total clicks":"8"},{"Date":"Lifetime","Post type":"Videos","Reach":"9217","Reach from Boosted posts":"8792","3-second video views":"5949","Views":"11718","Publish time":"2026-03-09 09:30:00","Comments":"2","Reactions, Comments and Shares":"30","Reach from Organic posts":"572","Shares":"0","Reactions":"28","Total clicks":"14"},{"Date":"Lifetime","Post type":"Videos","Reach":"13935","Reach from Boosted posts":"13151","3-second video views":"6669","Views":"18558","Publish time":"2026-03-10 09:30:00","Comments":"3","Reactions, Comments and Shares":"38","Reach from Organic posts":"734","Shares":"1","Reactions":"34","Total clicks":"17"},{"Date":"Lifetime","Post type":"Photos","Reach":"420","Reach from Boosted posts":"0","3-second video views":"0","Views":"880","Publish time":"2026-03-11 09:30:00","Comments":"2","Reactions, Comments and Shares":"27","Reach from Organic posts":"420","Shares":"1","Reactions":"24","Total clicks":"5"},{"Date":"Lifetime","Post type":"Videos","Reach":"3289","Reach from Boosted posts":"2835","3-second video views":"1455","Views":"4231","Publish time":"2026-03-12 09:30:00","Comments":"1","Reactions, Comments and Shares":"28","Reach from Organic posts":"473","Shares":"0","Reactions":"27","Total clicks":"5"},{"Date":"Lifetime","Post type":"Photos","Reach":"0","Reach from Boosted posts":"0","3-second video views":"0","Views":"0","Publish time":"2026-03-16 20:29:00","Comments":"0","Reactions, Comments and Shares":"25","Reach from Organic posts":"0","Shares":"0","Reactions":"25","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"1129","Reach from Boosted posts":"0","3-second video views":"0","Views":"2101","Publish time":"2026-03-18 09:30:00","Comments":"180","Reactions, Comments and Shares":"239","Reach from Organic posts":"1129","Shares":"12","Reactions":"47","Total clicks":"84"},{"Date":"Lifetime","Post type":"Videos","Reach":"1870","Reach from Boosted posts":"1145","3-second video views":"1056","Views":"2726","Publish time":"2026-03-19 09:30:00","Comments":"2","Reactions, Comments and Shares":"39","Reach from Organic posts":"754","Shares":"1","Reactions":"36","Total clicks":"2"},{"Date":"Lifetime","Post type":"Photos","Reach":"936","Reach from Boosted posts":"0","3-second video views":"0","Views":"1733","Publish time":"2026-03-20 09:30:00","Comments":"36","Reactions, Comments and Shares":"81","Reach from Organic posts":"936","Shares":"6","Reactions":"39","Total clicks":"25"},{"Date":"Lifetime","Post type":"Videos","Reach":"438","Reach from Boosted posts":"0","3-second video views":"170","Views":"725","Publish time":"2026-03-23 09:30:00","Comments":"0","Reactions, Comments and Shares":"25","Reach from Organic posts":"438","Shares":"0","Reactions":"25","Total clicks":"10"},{"Date":"Lifetime","Post type":"Photos","Reach":"1164","Reach from Boosted posts":"0","3-second video views":"0","Views":"1998","Publish time":"2026-03-24 09:30:00","Comments":"63","Reactions, Comments and Shares":"106","Reach from Organic posts":"1164","Shares":"6","Reactions":"37","Total clicks":"42"},{"Date":"Lifetime","Post type":"Photos","Reach":"1318","Reach from Boosted posts":"0","3-second video views":"0","Views":"2115","Publish time":"2026-03-26 09:30:00","Comments":"74","Reactions, Comments and Shares":"132","Reach from Organic posts":"1318","Shares":"2","Reactions":"56","Total clicks":"12"},{"Date":"Lifetime","Post type":"Photos","Reach":"870","Reach from Boosted posts":"0","3-second video views":"0","Views":"1525","Publish time":"2026-03-27 09:30:00","Comments":"48","Reactions, Comments and Shares":"91","Reach from Organic posts":"870","Shares":"2","Reactions":"41","Total clicks":"32"},{"Date":"Lifetime","Post type":"Photos","Reach":"1081","Reach from Boosted posts":"0","3-second video views":"0","Views":"1288","Publish time":"2026-04-01 09:30:00","Comments":"70","Reactions, Comments and Shares":"115","Reach from Organic posts":"1081","Shares":"2","Reactions":"43","Total clicks":"41"},{"Date":"Lifetime","Post type":"Photos","Reach":"522","Reach from Boosted posts":"0","3-second video views":"0","Views":"759","Publish time":"2026-04-03 09:30:00","Comments":"5","Reactions, Comments and Shares":"30","Reach from Organic posts":"522","Shares":"2","Reactions":"23","Total clicks":"7"},{"Date":"Lifetime","Post type":"Photos","Reach":"577","Reach from Boosted posts":"0","3-second video views":"0","Views":"1048","Publish time":"2026-04-05 19:30:00","Comments":"0","Reactions, Comments and Shares":"30","Reach from Organic posts":"577","Shares":"1","Reactions":"29","Total clicks":"4"},{"Date":"Lifetime","Post type":"Videos","Reach":"515","Reach from Boosted posts":"0","3-second video views":"115","Views":"631","Publish time":"2026-04-08 09:30:00","Comments":"0","Reactions, Comments and Shares":"21","Reach from Organic posts":"515","Shares":"1","Reactions":"20","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"1090","Reach from Boosted posts":"0","3-second video views":"0","Views":"1823","Publish time":"2026-04-10 09:30:00","Comments":"17","Reactions, Comments and Shares":"65","Reach from Organic posts":"1090","Shares":"2","Reactions":"46","Total clicks":"29"},{"Date":"Lifetime","Post type":"Photos","Reach":"1085","Reach from Boosted posts":"0","3-second video views":"0","Views":"1971","Publish time":"2026-04-13 09:30:00","Comments":"35","Reactions, Comments and Shares":"84","Reach from Organic posts":"1085","Shares":"1","Reactions":"48","Total clicks":"43"},{"Date":"Lifetime","Post type":"Videos","Reach":"584","Reach from Boosted posts":"0","3-second video views":"114","Views":"635","Publish time":"2026-04-17 09:30:00","Comments":"0","Reactions, Comments and Shares":"32","Reach from Organic posts":"584","Shares":"0","Reactions":"32","Total clicks":"3"},{"Date":"Lifetime","Post type":"Photos","Reach":"814","Reach from Boosted posts":"0","3-second video views":"0","Views":"1521","Publish time":"2026-01-01 08:30:00","Comments":"0","Reactions, Comments and Shares":"53","Reach from Organic posts":"814","Shares":"4","Reactions":"49","Total clicks":"9"}]},{"name":"Tongits ZingPlay","rows":[{"Date":"Lifetime","Post type":"Photos","Reach":"5655","Reach from Boosted posts":"0","3-second video views":"0","Views":"8958","Publish time":"2026-01-01 00:59:00","Comments":"94","Reactions, Comments and Shares":"167","Reach from Organic posts":"5655","Shares":"1","Reactions":"72","Total clicks":"225"},{"Date":"Lifetime","Post type":"Photos","Reach":"12045","Reach from Boosted posts":"0","3-second video views":"0","Views":"18097","Publish time":"2026-01-03 23:39:00","Comments":"899","Reactions, Comments and Shares":"1253","Reach from Organic posts":"12045","Shares":"34","Reactions":"320","Total clicks":"199"},{"Date":"Lifetime","Post type":"Photos","Reach":"4880","Reach from Boosted posts":"0","3-second video views":"0","Views":"7343","Publish time":"2026-01-10 18:43:00","Comments":"123","Reactions, Comments and Shares":"219","Reach from Organic posts":"4880","Shares":"7","Reactions":"89","Total clicks":"48"},{"Date":"Lifetime","Post type":"Photos","Reach":"7932","Reach from Boosted posts":"0","3-second video views":"0","Views":"11981","Publish time":"2026-01-13 18:09:00","Comments":"501","Reactions, Comments and Shares":"713","Reach from Organic posts":"7932","Shares":"14","Reactions":"198","Total clicks":"154"},{"Date":"Lifetime","Post type":"Photos","Reach":"7003","Reach from Boosted posts":"0","3-second video views":"0","Views":"11043","Publish time":"2026-01-21 18:38:00","Comments":"438","Reactions, Comments and Shares":"681","Reach from Organic posts":"7003","Shares":"24","Reactions":"219","Total clicks":"130"},{"Date":"Lifetime","Post type":"Photos","Reach":"7288","Reach from Boosted posts":"0","3-second video views":"0","Views":"11660","Publish time":"2026-01-28 22:52:00","Comments":"253","Reactions, Comments and Shares":"382","Reach from Organic posts":"7288","Shares":"6","Reactions":"123","Total clicks":"212"},{"Date":"Lifetime","Post type":"Photos","Reach":"4046","Reach from Boosted posts":"0","3-second video views":"0","Views":"6772","Publish time":"2026-02-09 02:00:00","Comments":"82","Reactions, Comments and Shares":"132","Reach from Organic posts":"4046","Shares":"1","Reactions":"49","Total clicks":"127"},{"Date":"Lifetime","Post type":"Photos","Reach":"3444","Reach from Boosted posts":"0","3-second video views":"0","Views":"5922","Publish time":"2026-02-14 02:00:00","Comments":"33","Reactions, Comments and Shares":"78","Reach from Organic posts":"3444","Shares":"2","Reactions":"43","Total clicks":"102"},{"Date":"Lifetime","Post type":"Photos","Reach":"3471","Reach from Boosted posts":"0","3-second video views":"0","Views":"5926","Publish time":"2026-02-20 02:00:00","Comments":"48","Reactions, Comments and Shares":"82","Reach from Organic posts":"3471","Shares":"0","Reactions":"34","Total clicks":"113"},{"Date":"Lifetime","Post type":"Photos","Reach":"2863","Reach from Boosted posts":"0","3-second video views":"0","Views":"5119","Publish time":"2026-02-26 02:00:00","Comments":"88","Reactions, Comments and Shares":"138","Reach from Organic posts":"2863","Shares":"1","Reactions":"49","Total clicks":"131"},{"Date":"Lifetime","Post type":"Photos","Reach":"6075","Reach from Boosted posts":"0","3-second video views":"0","Views":"9754","Publish time":"2026-03-02 03:00:00","Comments":"458","Reactions, Comments and Shares":"667","Reach from Organic posts":"6075","Shares":"10","Reactions":"199","Total clicks":"160"},{"Date":"Lifetime","Post type":"Photos","Reach":"2963","Reach from Boosted posts":"0","3-second video views":"0","Views":"4726","Publish time":"2026-03-08 04:01:00","Comments":"30","Reactions, Comments and Shares":"82","Reach from Organic posts":"2963","Shares":"3","Reactions":"49","Total clicks":"65"},{"Date":"Lifetime","Post type":"Photos","Reach":"6668","Reach from Boosted posts":"0","3-second video views":"0","Views":"10295","Publish time":"2026-03-11 04:00:00","Comments":"316","Reactions, Comments and Shares":"454","Reach from Organic posts":"6668","Shares":"14","Reactions":"124","Total clicks":"124"},{"Date":"Lifetime","Post type":"Photos","Reach":"4827","Reach from Boosted posts":"0","3-second video views":"0","Views":"7501","Publish time":"2026-03-15 04:00:00","Comments":"423","Reactions, Comments and Shares":"566","Reach from Organic posts":"4827","Shares":"5","Reactions":"138","Total clicks":"131"},{"Date":"Lifetime","Post type":"Videos","Reach":"5994","Reach from Boosted posts":"0","3-second video views":"1679","Views":"8125","Publish time":"2026-03-18 21:03:00","Comments":"52","Reactions, Comments and Shares":"87","Reach from Organic posts":"5994","Shares":"0","Reactions":"35","Total clicks":"56"},{"Date":"Lifetime","Post type":"Videos","Reach":"2570","Reach from Boosted posts":"0","3-second video views":"737","Views":"3043","Publish time":"2026-03-24 21:47:00","Comments":"23","Reactions, Comments and Shares":"50","Reach from Organic posts":"2570","Shares":"1","Reactions":"26","Total clicks":"41"},{"Date":"Lifetime","Post type":"Videos","Reach":"2124","Reach from Boosted posts":"0","3-second video views":"476","Views":"2268","Publish time":"2026-03-30 19:26:00","Comments":"6","Reactions, Comments and Shares":"21","Reach from Organic posts":"2124","Shares":"0","Reactions":"15","Total clicks":"19"},{"Date":"Lifetime","Post type":"Videos","Reach":"2507","Reach from Boosted posts":"0","3-second video views":"896","Views":"2671","Publish time":"2026-04-03 01:46:00","Comments":"10","Reactions, Comments and Shares":"34","Reach from Organic posts":"2507","Shares":"0","Reactions":"24","Total clicks":"56"},{"Date":"Lifetime","Post type":"Photos","Reach":"4496","Reach from Boosted posts":"0","3-second video views":"0","Views":"6625","Publish time":"2026-04-10 00:23:00","Comments":"209","Reactions, Comments and Shares":"290","Reach from Organic posts":"4496","Shares":"3","Reactions":"78","Total clicks":"70"},{"Date":"Lifetime","Post type":"Photos","Reach":"3","Reach from Boosted posts":"0","3-second video views":"0","Views":"3","Publish time":"2026-04-10 00:48:00","Comments":"9","Reactions, Comments and Shares":"25","Reach from Organic posts":"3","Shares":"0","Reactions":"16","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"2124","Reach from Boosted posts":"0","3-second video views":"0","Views":"3717","Publish time":"2026-04-15 05:00:00","Comments":"49","Reactions, Comments and Shares":"79","Reach from Organic posts":"2124","Shares":"0","Reactions":"30","Total clicks":"80"},{"Date":"Lifetime","Post type":"Videos","Reach":"1933","Reach from Boosted posts":"0","3-second video views":"658","Views":"2164","Publish time":"2026-04-18 01:01:00","Comments":"3","Reactions, Comments and Shares":"14","Reach from Organic posts":"1930","Shares":"0","Reactions":"11","Total clicks":"50"},{"Date":"Lifetime","Post type":"Photos","Reach":"49","Reach from Boosted posts":"0","3-second video views":"0","Views":"68","Publish time":"2026-04-23 04:01:00","Comments":"0","Reactions, Comments and Shares":"12","Reach from Organic posts":"49","Shares":"0","Reactions":"12","Total clicks":"0"},{"Date":"Lifetime","Post type":"Photos","Reach":"6188","Reach from Boosted posts":"0","3-second video views":"0","Views":"9780","Publish time":"2026-04-24 05:00:00","Comments":"175","Reactions, Comments and Shares":"555","Reach from Organic posts":"6188","Shares":"24","Reactions":"356","Total clicks":"543"},{"Date":"Lifetime","Post type":"Photos","Reach":"1725","Reach from Boosted posts":"0","3-second video views":"0","Views":"2535","Publish time":"2026-04-28 05:00:00","Comments":"11","Reactions, Comments and Shares":"26","Reach from Organic posts":"1725","Shares":"1","Reactions":"14","Total clicks":"29"},{"Date":"Lifetime","Post type":"Photos","Reach":"1426","Reach from Boosted posts":"0","3-second video views":"0","Views":"2254","Publish time":"2026-04-29 05:01:00","Comments":"4","Reactions, Comments and Shares":"10","Reach from Organic posts":"1426","Shares":"0","Reactions":"6","Total clicks":"18"},{"Date":"Lifetime","Post type":"Videos","Reach":"1852","Reach from Boosted posts":"0","3-second video views":"556","Views":"2209","Publish time":"2026-05-01 05:01:00","Comments":"0","Reactions, Comments and Shares":"9","Reach from Organic posts":"1852","Shares":"0","Reactions":"9","Total clicks":"14"}]},{"name":"ZingPlay GLCN","rows":[{"Date":"Lifetime","Post type":"Photos","Reach":"627","Reach from Boosted posts":"0","3-second video views":"0","Views":"971","Publish time":"2026-02-08 03:28:00","Comments":"14","Reactions, Comments and Shares":"28","Reach from Organic posts":"627","Shares":"1","Reactions":"13","Total clicks":"20"},{"Date":"Lifetime","Post type":"Photos","Reach":"1372","Reach from Boosted posts":"0","3-second video views":"0","Views":"2065","Publish time":"2026-02-08 20:34:00","Comments":"9","Reactions, Comments and Shares":"43","Reach from Organic posts":"1372","Shares":"1","Reactions":"33","Total clicks":"49"},{"Date":"Lifetime","Post type":"Photos","Reach":"1043","Reach from Boosted posts":"0","3-second video views":"0","Views":"1614","Publish time":"2026-02-09 05:00:00","Comments":"18","Reactions, Comments and Shares":"36","Reach from Organic posts":"1043","Shares":"2","Reactions":"16","Total clicks":"9"},{"Date":"Lifetime","Post type":"Photos","Reach":"1301","Reach from Boosted posts":"0","3-second video views":"0","Views":"1941","Publish time":"2026-02-10 18:38:00","Comments":"33","Reactions, Comments and Shares":"69","Reach from Organic posts":"1301","Shares":"5","Reactions":"31","Total clicks":"54"},{"Date":"Lifetime","Post type":"Videos","Reach":"403","Reach from Boosted posts":"0","3-second video views":"128","Views":"624","Publish time":"2026-02-14 07:19:00","Comments":"0","Reactions, Comments and Shares":"0","Reach from Organic posts":"403","Shares":"0","Reactions":"0","Total clicks":"1"},{"Date":"Lifetime","Post type":"Videos","Reach":"692","Reach from Boosted posts":"0","3-second video views":"259","Views":"940","Publish time":"2026-02-16 07:02:00","Comments":"0","Reactions, Comments and Shares":"2","Reach from Organic posts":"692","Shares":"0","Reactions":"2","Total clicks":"1"},{"Date":"Lifetime","Post type":"Photos","Reach":"2264","Reach from Boosted posts":"0","3-second video views":"0","Views":"3381","Publish time":"2026-02-23 07:16:00","Comments":"94","Reactions, Comments and Shares":"144","Reach from Organic posts":"2264","Shares":"3","Reactions":"47","Total clicks":"181"},{"Date":"Lifetime","Post type":"Photos","Reach":"678","Reach from Boosted posts":"0","3-second video views":"0","Views":"1060","Publish time":"2026-02-24 06:03:00","Comments":"16","Reactions, Comments and Shares":"24","Reach from Organic posts":"678","Shares":"1","Reactions":"7","Total clicks":"35"},{"Date":"Lifetime","Post type":"Photos","Reach":"1254","Reach from Boosted posts":"0","3-second video views":"0","Views":"1899","Publish time":"2026-02-25 06:29:00","Comments":"32","Reactions, Comments and Shares":"64","Reach from Organic posts":"1254","Shares":"3","Reactions":"29","Total clicks":"6"},{"Date":"Lifetime","Post type":"Photos","Reach":"2141","Reach from Boosted posts":"0","3-second video views":"0","Views":"3411","Publish time":"2026-02-27 03:00:00","Comments":"132","Reactions, Comments and Shares":"177","Reach from Organic posts":"2141","Shares":"6","Reactions":"39","Total clicks":"234"},{"Date":"Lifetime","Post type":"Photos","Reach":"1064","Reach from Boosted posts":"0","3-second video views":"0","Views":"1586","Publish time":"2026-02-27 21:00:00","Comments":"37","Reactions, Comments and Shares":"68","Reach from Organic posts":"1064","Shares":"4","Reactions":"27","Total clicks":"32"},{"Date":"Lifetime","Post type":"Photos","Reach":"384","Reach from Boosted posts":"0","3-second video views":"0","Views":"692","Publish time":"2026-02-28 22:30:00","Comments":"0","Reactions, Comments and Shares":"3","Reach from Organic posts":"384","Shares":"1","Reactions":"2","Total clicks":"3"},{"Date":"Lifetime","Post type":"Photos","Reach":"461","Reach from Boosted posts":"0","3-second video views":"0","Views":"753","Publish time":"2026-03-04 07:00:00","Comments":"4","Reactions, Comments and Shares":"6","Reach from Organic posts":"461","Shares":"1","Reactions":"1","Total clicks":"6"},{"Date":"Lifetime","Post type":"Photos","Reach":"478","Reach from Boosted posts":"0","3-second video views":"0","Views":"808","Publish time":"2026-03-08 08:01:00","Comments":"5","Reactions, Comments and Shares":"9","Reach from Organic posts":"478","Shares":"1","Reactions":"3","Total clicks":"10"},{"Date":"Lifetime","Post type":"Photos","Reach":"363","Reach from Boosted posts":"0","3-second video views":"0","Views":"636","Publish time":"2026-03-15 07:00:00","Comments":"3","Reactions, Comments and Shares":"5","Reach from Organic posts":"363","Shares":"0","Reactions":"2","Total clicks":"9"},{"Date":"Lifetime","Post type":"Photos","Reach":"1928","Reach from Boosted posts":"0","3-second video views":"0","Views":"2645","Publish time":"2026-03-30 19:32:00","Comments":"131","Reactions, Comments and Shares":"172","Reach from Organic posts":"1928","Shares":"5","Reactions":"36","Total clicks":"202"},{"Date":"Lifetime","Post type":"Photos","Reach":"2279","Reach from Boosted posts":"0","3-second video views":"0","Views":"2603","Publish time":"2026-03-31 21:00:00","Comments":"213","Reactions, Comments and Shares":"290","Reach from Organic posts":"2279","Shares":"8","Reactions":"69","Total clicks":"50"},{"Date":"Lifetime","Post type":"Photos","Reach":"1580","Reach from Boosted posts":"0","3-second video views":"0","Views":"1967","Publish time":"2026-04-02 04:30:00","Comments":"61","Reactions, Comments and Shares":"84","Reach from Organic posts":"1580","Shares":"3","Reactions":"20","Total clicks":"151"},{"Date":"Lifetime","Post type":"Photos","Reach":"1232","Reach from Boosted posts":"0","3-second video views":"0","Views":"1857","Publish time":"2026-04-03 23:00:00","Comments":"22","Reactions, Comments and Shares":"46","Reach from Organic posts":"1232","Shares":"3","Reactions":"21","Total clicks":"44"},{"Date":"Lifetime","Post type":"Photos","Reach":"1303","Reach from Boosted posts":"0","3-second video views":"0","Views":"1950","Publish time":"2026-04-06 04:30:00","Comments":"80","Reactions, Comments and Shares":"104","Reach from Organic posts":"1303","Shares":"1","Reactions":"23","Total clicks":"159"},{"Date":"Lifetime","Post type":"Photos","Reach":"1136","Reach from Boosted posts":"0","3-second video views":"0","Views":"1718","Publish time":"2026-04-08 22:00:00","Comments":"73","Reactions, Comments and Shares":"101","Reach from Organic posts":"1136","Shares":"1","Reactions":"27","Total clicks":"119"},{"Date":"Lifetime","Post type":"Photos","Reach":"1312","Reach from Boosted posts":"0","3-second video views":"0","Views":"1975","Publish time":"2026-04-12 20:35:00","Comments":"93","Reactions, Comments and Shares":"120","Reach from Organic posts":"1312","Shares":"2","Reactions":"25","Total clicks":"127"},{"Date":"Lifetime","Post type":"Videos","Reach":"377","Reach from Boosted posts":"0","3-second video views":"178","Views":"604","Publish time":"2026-04-16 22:01:00","Comments":"3","Reactions, Comments and Shares":"18","Reach from Organic posts":"377","Shares":"1","Reactions":"14","Total clicks":"1"},{"Date":"Lifetime","Post type":"Videos","Reach":"975","Reach from Boosted posts":"0","3-second video views":"515","Views":"1434","Publish time":"2026-04-17 06:03:00","Comments":"14","Reactions, Comments and Shares":"61","Reach from Organic posts":"975","Shares":"3","Reactions":"44","Total clicks":"1"},{"Date":"Lifetime","Post type":"Photos","Reach":"2967","Reach from Boosted posts":"0","3-second video views":"0","Views":"5247","Publish time":"2026-04-19 08:02:00","Comments":"165","Reactions, Comments and Shares":"310","Reach from Organic posts":"2967","Shares":"62","Reactions":"83","Total clicks":"263"},{"Date":"Lifetime","Post type":"Photos","Reach":"861","Reach from Boosted posts":"0","3-second video views":"0","Views":"1524","Publish time":"2026-01-05 17:35:00","Comments":"36","Reactions, Comments and Shares":"65","Reach from Organic posts":"861","Shares":"9","Reactions":"20","Total clicks":"74"},{"Date":"Lifetime","Post type":"Photos","Reach":"783","Reach from Boosted posts":"0","3-second video views":"0","Views":"1319","Publish time":"2026-01-09 04:30:00","Comments":"9","Reactions, Comments and Shares":"19","Reach from Organic posts":"783","Shares":"2","Reactions":"8","Total clicks":"9"},{"Date":"Lifetime","Post type":"Photos","Reach":"1808","Reach from Boosted posts":"0","3-second video views":"0","Views":"3051","Publish time":"2026-01-12 18:21:00","Comments":"92","Reactions, Comments and Shares":"139","Reach from Organic posts":"1808","Shares":"7","Reactions":"40","Total clicks":"188"},{"Date":"Lifetime","Post type":"Photos","Reach":"1700","Reach from Boosted posts":"0","3-second video views":"0","Views":"2910","Publish time":"2026-01-15 03:30:00","Comments":"79","Reactions, Comments and Shares":"119","Reach from Organic posts":"1700","Shares":"5","Reactions":"35","Total clicks":"150"},{"Date":"Lifetime","Post type":"Photos","Reach":"1779","Reach from Boosted posts":"0","3-second video views":"0","Views":"2922","Publish time":"2026-01-17 19:19:00","Comments":"68","Reactions, Comments and Shares":"115","Reach from Organic posts":"1779","Shares":"6","Reactions":"41","Total clicks":"102"},{"Date":"Lifetime","Post type":"Photos","Reach":"1650","Reach from Boosted posts":"0","3-second video views":"0","Views":"2722","Publish time":"2026-01-19 04:00:00","Comments":"69","Reactions, Comments and Shares":"116","Reach from Organic posts":"1650","Shares":"4","Reactions":"43","Total clicks":"129"},{"Date":"Lifetime","Post type":"Photos","Reach":"1491","Reach from Boosted posts":"0","3-second video views":"0","Views":"2502","Publish time":"2026-01-21 04:00:00","Comments":"40","Reactions, Comments and Shares":"101","Reach from Organic posts":"1491","Shares":"5","Reactions":"56","Total clicks":"61"},{"Date":"Lifetime","Post type":"Photos","Reach":"1718","Reach from Boosted posts":"0","3-second video views":"0","Views":"3304","Publish time":"2026-01-25 18:23:00","Comments":"184","Reactions, Comments and Shares":"286","Reach from Organic posts":"1718","Shares":"46","Reactions":"56","Total clicks":"32"},{"Date":"Lifetime","Post type":"Photos","Reach":"593","Reach from Boosted posts":"0","3-second video views":"0","Views":"1040","Publish time":"2026-01-28 03:30:00","Comments":"26","Reactions, Comments and Shares":"38","Reach from Organic posts":"593","Shares":"2","Reactions":"10","Total clicks":"30"},{"Date":"Lifetime","Post type":"Photos","Reach":"1575","Reach from Boosted posts":"0","3-second video views":"0","Views":"2437","Publish time":"2026-02-01 06:22:00","Comments":"22","Reactions, Comments and Shares":"64","Reach from Organic posts":"1575","Shares":"2","Reactions":"40","Total clicks":"54"},{"Date":"Lifetime","Post type":"Photos","Reach":"1560","Reach from Boosted posts":"0","3-second video views":"0","Views":"2989","Publish time":"2026-02-01 19:51:00","Comments":"86","Reactions, Comments and Shares":"129","Reach from Organic posts":"1560","Shares":"2","Reactions":"41","Total clicks":"94"},{"Date":"Lifetime","Post type":"Photos","Reach":"1402","Reach from Boosted posts":"0","3-second video views":"0","Views":"2256","Publish time":"2026-02-03 03:30:00","Comments":"51","Reactions, Comments and Shares":"104","Reach from Organic posts":"1402","Shares":"5","Reactions":"48","Total clicks":"85"},{"Date":"Lifetime","Post type":"Photos","Reach":"1503","Reach from Boosted posts":"0","3-second video views":"0","Views":"2230","Publish time":"2026-02-06 03:30:00","Comments":"47","Reactions, Comments and Shares":"76","Reach from Organic posts":"1503","Shares":"5","Reactions":"24","Total clicks":"15"}]}]};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // ── Set up page slots from preloaded data ──
+  ['casual','bai'].forEach(cat => {
+    const src = PRELOAD_DATA[cat];
+    src.forEach((pg, i) => {
+      CATS[cat].pages.push({
+        name: pg.name,
+        color: CATS[cat].pageColors[i % CATS[cat].pageColors.length],
+        data: pg.rows,
+        fileName: 'preloaded'
+      });
+    });
+  });
+  renderUploadZones('casual');
+  renderUploadZones('bai');
+  updateSlotCounts();
+  checkStart();
+});
+
+</script>
+</body>
+</html>
